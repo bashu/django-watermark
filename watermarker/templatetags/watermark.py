@@ -5,6 +5,7 @@ from watermarker import utils
 import Image
 import urlparse
 import os
+from datetime import datetime
 
 register = template.Library()
 
@@ -113,12 +114,13 @@ def watermark(url, args=''):
     opacity = 0.5
     tile = False
     scale = False
+    greyscale = False
     mode = None
     b_edge = t_edge = l_edge = r_edge = False
 
     # look for the specified watermark by name.  If it's not there, go no further
     try:
-        watermark = Watermark.objects.get(name=name
+        watermark = Watermark.objects.get(name=name,
                                           is_active=True)
     except:
         return url
@@ -157,9 +159,11 @@ def watermark(url, args=''):
             tile = bool(int(value))
         elif key == 'scale':
             scale = bool(int(value))
+        elif key == 'greyscale':
+            greyscale = bool(int(value))
 
     # come up with a good filename for this watermarked image
-    wm_name = '%(base)s_wm_w%(watermark)i_o%(opacity)i'
+    wm_name = '%(base)s_wm_w%(watermark)i_o%(opacity)i_gs%(greyscale)i'
     if scale:
         wm_name += '_scaled'
         mode = 'scale'
@@ -177,6 +181,7 @@ def watermark(url, args=''):
     wm_name = wm_name % {'base': base,
                          'watermark': watermark.id,
                          'opacity': opacity * 100,
+                         'greyscale': greyscale,
                          'left': left,
                          'top': top,
                          'ext': ext
@@ -188,7 +193,12 @@ def watermark(url, args=''):
 
     # see if the image already exists on the filesystem.  If it does, use it.
     if os.access(new_path, os.R_OK):
-        return new_file
+        # see if the Watermark object was modified since the file was created
+        modified = datetime.fromtimestamp(os.path.getmtime(new_path))
+
+        # only return the old file if things appear to be the same
+        if modified >= watermark.date_updated:
+            return new_file
 
     # open the original image file
     orig = Image.open(old_path)
@@ -220,7 +230,7 @@ def watermark(url, args=''):
         mode = (left, top)
 
     # create the watermarked image on the filesystem
-    wm_image = utils.watermark(orig, mark, mode, opacity)
+    wm_image = utils.watermark(orig, mark, mode, opacity, greyscale)
     wm_image.save(new_path, quality=QUALITY)
 
     # send back the URL to the new, watermarked image

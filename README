@@ -51,7 +51,7 @@ svn co http://django-watermark.googlecode.com/svn/trunk/watermarker watermarker
 The easiest way to ensure that you have successfully installed Pendulum is to execute a command such as:
 
 {{{
-python -c "import watermarker; watermarker.get_version()"
+python -c "import watermarker; print watermarker.get_version()"
 }}}
 
 If that displays the version of django-watermark that you tried to install, you're good to roll.  If you see something other than that, you probably need to check your `PYTHONPATH` environment variable.
@@ -108,6 +108,10 @@ If you want your watermark to tile across the entire image, you simply specify a
 ===`scale`===
 
 If you'd like to have the watermark as big as possible on the target image and fully visible, you might want to use `scale=1`.  This parameter takes precendece over both the `tile` and `position` parameter.  That means that if you specify either of those parameters (`position` and `tile`) along with the `scale=1` parameter, only `scale` will be applied.
+
+===`greyscale`===
+
+If you want your watermark to be greyscale, you can specify the parameter `greyscale=1` and all color saturation will go away.
 
 ==Examples==
 

@@ -20,13 +20,16 @@ def reduce_opacity(im, opacity):
 
     return im
 
-def watermark(img, mark, position, opacity=1):
+def watermark(img, mark, position, opacity=1, greyscale=False):
     """Adds a watermark to an image."""
     if opacity < 1:
         mark = reduce_opacity(mark, opacity)
 
     if img.mode != 'RGBA':
         img = img.convert('RGBA')
+
+    if greyscale and mark.mode != 'L':
+        mark = mark.convert('LA')
 
     # create a transparent layer the size of the image and draw the
     # watermark in that layer.
