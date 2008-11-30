@@ -1,0 +1,136 @@
+This project provides a simple way for you to apply custom watermarks to images on your Django-powered website.
+
+=Features=
+
+  * Opacity: the filter allows you to specify the transparency level for your watermark image.
+  * Watermark positioning: you have several options for positioning watermarks on your images.
+    * Absolute: you can specify exact pixel locations for your watermark
+    * Relative: you can use percentages to place your watermark
+    * Corners: you can position your watermark in the corners of your images
+  * Scaling: the watermark can be scaled to cover your images
+  * Tiling: the watermark can be tiled across your images
+
+=Credits=
+
+I didn't write any of the code that actually applies the watermark.  I snagged it from http://code.activestate.com/recipes/362879/ and turned it into a Django pluggable application.  Props to Shane Hathaway.
+
+==Requirements==
+
+`django-watermark` requires a modern version of the Django framework.  By modern I simply mean a version with the `newforms-admin` functionality.  If you're running on Django 1.0 or later, you're good.
+
+`django-watermark` also relies upon the built-in `django.contrib.admin` and the [http://www.pythonware.com/products/pil/ Python Imaging Library] (PIL).
+
+==Installation==
+
+Download `django-watermark` using *one* of the following methods:
+
+===easy_install===
+
+You can download the package from the [http://pypi.python.org/pypi/django-watermark/ CheeseShop] or use
+
+{{{
+easy_install django-watermark
+}}}
+
+to download and install `django-watermark`.
+
+===Package Download===
+
+Download the latest `.tar.gz`, `.tar.bz2`, or `.zip` file from the downloads section and extract it somewhere you'll remember.  Use `python setup.py install` to install it.
+
+===Checkout from Subversion===
+
+Execute the following command (or use the equivalent function in a GUI such as TortoiseSVN), and make sure you're checking Pendulum out somewhere on the `PYTHONPATH`.
+
+{{{
+svn co http://django-watermark.googlecode.com/svn/trunk/watermarker watermarker
+}}}
+
+===Verifying Installation===
+
+The easiest way to ensure that you have successfully installed Pendulum is to execute a command such as:
+
+{{{
+python -c "import watermarker; watermarker.get_version()"
+}}}
+
+If that displays the version of django-watermark that you tried to install, you're good to roll.  If you see something other than that, you probably need to check your `PYTHONPATH` environment variable.
+
+==Configuration==
+
+First of all, you must add this project to your list of `INSTALLED_APPS` in `settings.py`:
+
+{{{
+INSTALLED_APPS = (
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    ...
+    'watermarker',
+    ...
+)
+}}}
+
+Run `manage.py syncdb`.  This creates the tables in your database that are necessary for operation.
+
+While we're in this section, I might as well mention a settings variable that you can override: `WATERMARKING_QUALITY`.  This should be an integer between 0 and 100.  The default is 85.
+
+==Usage==
+
+As mentioned above, you have several options when using django-watermark.  The first thing you must do is load the filter for the template in which you wish to apply watermarks to your images.
+
+{{{
+{% load watermark %}
+}}}
+
+From the Django admin, go ahead and populate your database with some watermarks that you want to apply to your regular images.  Simply specify a name for the watermark and upload the watermark image itself.  *It's probably not a good idea to put commas in your watermark names.*  Watermarks should be transparent PNG files for best results.  I can't make any guarantees that other formats will work nicely.
+
+The first parameter to the `watermark` filter _must_ be the name you specified for the watermark in the Django admin.  You can then choose from a few other parameters to customize the application of the watermark.  Here they are:
+
+===`position`===
+
+This one is quite customizable.  First, you can plug your watermark into one corner of your images by using one of `br`, `bl`, `tr`, and `tl`.  These represent 'bottom-right', 'bottom-left', 'top-right', and 'top-left' respectively.
+
+Alternatively, you can use relative or absolute positioning for the watermark.  Relative positioning uses percentages; absolute positioning uses exact pixels.  You can mix and match these two modes of positioning, but you cannot mix and match relative/absolute with the corner positioning.  When using relative/absolute positioning, the value for the `position` parameter is `XxY`, where `X` is the left value and `Y` is the top value.  The left and top values must be separated with a lowercase `x`.
+
+If you wanted the top-left corner of your watermark image to show up in the center of any image you want to watermark, you would use a position parameter such as `position=50%x50%`.  If you wanted the watermark to show up half-way between the left and right edges of the image and 100 pixels from the top, you would use a position parameter such as `position=50%x100`.
+
+===`opacity`===
+
+This parameter allows you to specify the transparency of the applied watermark.  The value must be an integer between 0 and 100, where 0 is fully transparent and 100 is fully opaque.  By default, the opacity is set at 50%.
+
+===`tile`===
+
+If you want your watermark to tile across the entire image, you simply specify a parameter such as `tile=1`.  This parameter takes precedence over the `position` but not the `scale` parameter.  That means that if you specify `position` and `tile=1`, the `position` parameter will be ignored.  However, if you specify `tile=1` and `scale=1`, the `tile` parameter will be ignored.
+
+===`scale`===
+
+If you'd like to have the watermark as big as possible on the target image and fully visible, you might want to use `scale=1`.  This parameter takes precendece over both the `tile` and `position` parameter.  That means that if you specify either of those parameters (`position` and `tile`) along with the `scale=1` parameter, only `scale` will be applied.
+
+==Examples==
+
+{{{
+{{ image_url|watermark:"My Watermark,position=br,opacity=35" }}
+}}}
+
+Looks for a watermark named "My Watermark", place it in the bottom-right corner of the target image, using a 35% transparency level.
+
+{{{
+{{ image_url|watermark:"Your Watermark,position=tl,opacity=75" }}
+}}}
+
+Looks for a watermark named "Your Watermark", place it in the top-left corner of the target image, using a 75% transparency level.
+
+{{{
+{{ image_url|watermark:"The Watermark,position=43%x80%,opacity=40" }}
+}}}
+
+Looks for a watermark named "The Watermark", places its top-left corner at 43% on the x-axis and 80% of the y-axis of the target image, at a transparency level of 40%.
+
+{{{
+{{ image_url|watermark:"w00t,opacity=40,tile=1" }}
+}}}
+
+Looks for a watermark called "w00t", tiles it across the entire target image, at a transparency level of 40%.
