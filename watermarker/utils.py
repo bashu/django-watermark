@@ -20,7 +20,7 @@ def reduce_opacity(im, opacity):
 
     return im
 
-def watermark(img, mark, position, opacity=1, greyscale=False):
+def watermark(img, mark, position, opacity=1, greyscale=False, rotation=0):
     """Adds a watermark to an image."""
     if opacity < 1:
         mark = reduce_opacity(mark, opacity)
@@ -28,8 +28,13 @@ def watermark(img, mark, position, opacity=1, greyscale=False):
     if img.mode != 'RGBA':
         img = img.convert('RGBA')
 
-    if greyscale and mark.mode != 'L':
+    if greyscale and mark.mode != 'LA':
         mark = mark.convert('LA')
+
+    if rotation != 0:
+        rotmark = Image.new('RGBA', mark.size, (0,0,0,0))
+        rotmark.paste(mark, (0,0))
+        mark = rotmark.rotate(rotation)
 
     # create a transparent layer the size of the image and draw the
     # watermark in that layer.

@@ -2,13 +2,16 @@ This project provides a simple way for you to apply custom watermarks to images 
 
 =Features=
 
-  * Opacity: the filter allows you to specify the transparency level for your watermark image.
-  * Watermark positioning: you have several options for positioning watermarks on your images.
+  * Opacity: the filter allows you to specify the transparency level for your watermark image
+  * Watermark positioning: you have several options for positioning watermarks on your images
     * Absolute: you can specify exact pixel locations for your watermark
     * Relative: you can use percentages to place your watermark
     * Corners: you can position your watermark in the corners of your images
+    * Random: you can tell the filter to randomly generate a position for your watermark
   * Scaling: the watermark can be scaled to cover your images
   * Tiling: the watermark can be tiled across your images
+  * Greyscale: you can convert the watermark to be greyscale before having it applied to the target image.
+  * Rotation: you can rotate your watermark a certain number of degrees or have the rotation be random.
 
 =Credits=
 
@@ -95,7 +98,9 @@ This one is quite customizable.  First, you can plug your watermark into one cor
 
 Alternatively, you can use relative or absolute positioning for the watermark.  Relative positioning uses percentages; absolute positioning uses exact pixels.  You can mix and match these two modes of positioning, but you cannot mix and match relative/absolute with the corner positioning.  When using relative/absolute positioning, the value for the `position` parameter is `XxY`, where `X` is the left value and `Y` is the top value.  The left and top values must be separated with a lowercase `x`.
 
-If you wanted the top-left corner of your watermark image to show up in the center of any image you want to watermark, you would use a position parameter such as `position=50%x50%`.  If you wanted the watermark to show up half-way between the left and right edges of the image and 100 pixels from the top, you would use a position parameter such as `position=50%x100`.
+If you wanted your watermark image to show up in the center of any image you want to watermark, you would use a position parameter such as `position=50%x50%`.  If you wanted the watermark to show up half-way between the left and right edges of the image and 100 pixels from the top, you would use a position parameter such as `position=50%x100`.
+
+Finally, you may tell the filter to generate a position for your watermark dynamically.  To do this, use `position=R` and be sure you're using an uppercase 'R' (a lowercase 'r' would be detected as part of either `br` or `tr`).
 
 ===`opacity`===
 
@@ -112,6 +117,10 @@ If you'd like to have the watermark as big as possible on the target image and f
 ===`greyscale`===
 
 If you want your watermark to be greyscale, you can specify the parameter `greyscale=1` and all color saturation will go away.
+
+===`rotation`===
+
+Set this parameter to any integer between 0 and 359 (really any integer should work, but for your own sanity I recommend keeping the value between 0 and 359).  If you want the rotation to be random, use `rotation=R` instead of an integer.
 
 ==Examples==
 
@@ -131,7 +140,13 @@ Looks for a watermark named "Your Watermark", place it in the top-left corner of
 {{ image_url|watermark:"The Watermark,position=43%x80%,opacity=40" }}
 }}}
 
-Looks for a watermark named "The Watermark", places its top-left corner at 43% on the x-axis and 80% of the y-axis of the target image, at a transparency level of 40%.
+Looks for a watermark named "The Watermark", places it at 43% on the x-axis and 80% of the y-axis of the target image, at a transparency level of 40%.
+
+{{{
+{{ image_url|watermark:"The Watermark,position=R,opacity=10,rotation=45" }}
+}}}
+
+Looks for a watermark named "The Watermark", randomly generates a position for it, at a transparency level of 10%, rotated 45 degrees.
 
 {{{
 {{ image_url|watermark:"w00t,opacity=40,tile=1" }}

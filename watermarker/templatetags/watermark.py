@@ -2,10 +2,11 @@ from django import template
 from django.conf import settings
 from watermarker.models import Watermark
 from watermarker import utils
+from datetime import datetime
 import Image
 import urlparse
 import os
-from datetime import datetime
+import random
 
 register = template.Library()
 
@@ -72,14 +73,12 @@ def watermark(url, args=''):
             `tiled` or `scale` parameters are true.
 
             Examples::
-                50%x50% - positions the top-left corner of the watermark at the
-                    center of the image.
-                50%x100 - positions the top-left corner of the watermark at the
-                    midpoint of the total width of the image and 100 pixels from
-                    the top of the image
-                100x50% - positions the top-left corner of the watermark at the
-                    midpoint of the total height of the image and 100 pixels
-                    from the left edge of the image
+                50%x50% - positions the watermark at the center of the image.
+                50%x100 - positions the watermark at the midpoint of the total
+                    width of the image and 100 pixels from the top of the image
+                100x50% - positions the watermark at the midpoint of the total
+                    height of the image and 100 pixels from the left edge of
+                    the image
                 100x100 - positions the top-left corner of the watermark at 100
                     pixels from the top of the image and 100 pixels from the
                     left edge of the image.
@@ -88,6 +87,7 @@ def watermark(url, args=''):
             the extreme edge of the original image with just enough room for
             the watermark to "fully show".  This assumes the watermark is not
             as big as the original image.
+        - just R for random placement
     - opacity::
         - X where X is an integer from 0 to 100.  This value represents the
             transparency level of the watermark when it is applied.
@@ -99,23 +99,33 @@ def watermark(url, args=''):
         - 0 or 1 to specify whether or not to scale the watermark to cover the
             whole image.  Takes precedence over both the `position` and `tile`
             parameters.
+    - greyscale::
+        - 0 or 1 to specify whether or not the watermark should be converted to
+            a greyscale image before applying it to the target image.
+    - rotation::
+        - 0 to 359 to specify the number of degrees to rotate the watermark
+            before applying it to the target image.  Alternatively, you may
+            set rotation=R for a random rotation value.
 
     A full example for using this filter follows::
 
-        {{ image|watermark:"My Watermark,position=100x100,opacity=35,tile=0,scale=0" }}
+        {{ image|watermark:"My Watermark,position=100x100,opacity=35,tile=0,scale=0,greyscale=1,rotation=45" }}
     """
 
     basedir = os.path.dirname(url) + '/'
     base, ext = os.path.splitext(os.path.basename(url))
 
+    # initialize some variables
     args = args.split(',')
     name = args.pop(0)
     top = left = 0
+    o_left = o_top = '0'
     opacity = 0.5
     tile = False
     scale = False
     greyscale = False
-    mode = None
+    rotation = 0
+    pos = mode = None
     b_edge = t_edge = l_edge = r_edge = False
 
     # look for the specified watermark by name.  If it's not there, go no further
@@ -146,13 +156,17 @@ def watermark(url, args=''):
                 else:
                     top = _int(o_top)
             else:
-                # corner positioning--only take the first two characters
-                pos = pos[0][:2]
+                if pos == 'R':
+                    # random positioning
+                    continue
+                else:
+                    # corner positioning--only take the first two characters
+                    pos = pos[0][:2]
 
-                b_edge = 'b' in pos
-                t_edge = 't' in pos
-                l_edge = 'l' in pos
-                r_edge = 'r' in pos
+                    b_edge = 'b' in pos
+                    t_edge = 't' in pos
+                    l_edge = 'l' in pos
+                    r_edge = 'r' in pos
         elif key == 'opacity':
             opacity = _percent(value)
         elif key == 'tile':
@@ -161,9 +175,49 @@ def watermark(url, args=''):
             scale = bool(int(value))
         elif key == 'greyscale':
             greyscale = bool(int(value))
+        elif key == 'rotation':
+            if value.lower() == 'r':
+                rotation = random.randint(0, 359)
+            else:
+                rotation = _int(value)
+
+    # open the target image file
+    target_path = _get_path_from_url(url)
+    target = Image.open(target_path)
+    mark = Image.open(watermark.image.path)
+
+    # determine the actual position based on the size of the image
+    max_left = target.size[0] - mark.size[0]
+    max_top = target.size[1] - mark.size[1]
+    if pos and pos == 'R':
+        # random positioning
+        left = random.randint(0, max_left)
+        top = random.randint(0, max_top)
+    elif b_edge or t_edge or l_edge or r_edge:
+        # corner positioning
+        if t_edge:
+            top = 0
+        elif b_edge:
+            top = max_top
+        if l_edge:
+            left = 0
+        elif r_edge:
+            left = max_left
+
+        if top < 0: top = 0
+        if left < 0: left = 0
+    else:
+        # relative/absolute positioning
+        if '%' in o_left:
+            left = int(max_left * left)
+
+        if '%' in o_top:
+            top = int(max_top * top)
+
+    mode = (left, top)
 
     # come up with a good filename for this watermarked image
-    wm_name = '%(base)s_wm_w%(watermark)i_o%(opacity)i_gs%(greyscale)i'
+    wm_name = '%(base)s_wm_w%(watermark)i_o%(opacity)i_gs%(greyscale)i_r%(rotation)i'
     if scale:
         wm_name += '_scaled'
         mode = 'scale'
@@ -181,6 +235,7 @@ def watermark(url, args=''):
     wm_name = wm_name % {'base': base,
                          'watermark': watermark.id,
                          'opacity': opacity * 100,
+                         'rotation': rotation,
                          'greyscale': greyscale,
                          'left': left,
                          'top': top,
@@ -188,7 +243,6 @@ def watermark(url, args=''):
                         }
 
     new_file = urlparse.urljoin(basedir, wm_name)
-    old_path = _get_path_from_url(url)
     new_path = _get_path_from_url(new_file)
 
     # see if the image already exists on the filesystem.  If it does, use it.
@@ -200,37 +254,8 @@ def watermark(url, args=''):
         if modified >= watermark.date_updated:
             return new_file
 
-    # open the original image file
-    orig = Image.open(old_path)
-    mark = Image.open(watermark.image.path)
-
-    # determine the actual position based on the size of the image
-    if not mode:
-        if b_edge or t_edge or l_edge or r_edge:
-            # corner positioning
-            if t_edge:
-                top = 0
-            elif b_edge:
-                top = orig.size[1] - mark.size[1]
-            if l_edge:
-                left = 0
-            elif r_edge:
-                left = orig.size[0] - mark.size[0]
-
-            if top < 0: top = 0
-            if left < 0: left = 0
-        else:
-            # relative/absolute positioning
-            if '%' in o_left:
-                left = int(orig.size[0] * left)
-
-            if '%' in o_top:
-                top = int(orig.size[1] * top)
-
-        mode = (left, top)
-
     # create the watermarked image on the filesystem
-    wm_image = utils.watermark(orig, mark, mode, opacity, greyscale)
+    wm_image = utils.watermark(target, mark, mode, opacity, greyscale, rotation)
     wm_image.save(new_path, quality=QUALITY)
 
     # send back the URL to the new, watermarked image
