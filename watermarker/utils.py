@@ -60,9 +60,9 @@ def watermark(img, mark, position, opacity=1, greyscale=False, rotation=0):
 def test():
     im = Image.open('test.png')
     mark = Image.open('overlay.png')
-    watermark(im, mark, 'tile', 0.5).show()
-    watermark(im, mark, 'scale', 1.0).show()
-    watermark(im, mark, (100, 100), 0.5).show()
+    watermark(im, mark, 'tile', 0.5, rotation=30).save('test1.png')
+    watermark(im, mark, 'scale', 1.0).save('test2.png')
+    watermark(im, mark, (100, 100), 0.5, True, -45).save('test3.png')
 
 if __name__ == '__main__':
     test()

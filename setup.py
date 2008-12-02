@@ -41,22 +41,28 @@ setup(
     url='http://code.google.com/p/django-watermark/',
     author='Josh VanderLinden',
     author_email='codekoala@gmail.com',
-    license='MIT',
+    license='BSD',
     packages=packages,
     data_files=data_files,
     description="Quick and efficient way to apply watermarks to images in Django.",
     long_description="""
 This project provides a simple way for you to apply custom watermarks to images on your Django-powered website.
 
-=Features=
+Features
+--------
 
-  * Opacity: the filter allows you to specify the transparency level for your watermark image.
-  * Watermark positioning: you have several options for positioning watermarks on your images.
+  * Opacity: the filter allows you to specify the transparency level for your watermark image
+  * Watermark positioning: you have several options for positioning watermarks on your images
+
     * Absolute: you can specify exact pixel locations for your watermark
     * Relative: you can use percentages to place your watermark
     * Corners: you can position your watermark in the corners of your images
+    * Random: you can tell the filter to randomly generate a position for your watermark
+
   * Scaling: the watermark can be scaled to cover your images
   * Tiling: the watermark can be tiled across your images
+  * Greyscale: you can convert the watermark to be greyscale before having it applied to the target image.
+  * Rotation: you can rotate your watermark a certain number of degrees or have the rotation be random.
 """,
     keywords='django, watermark, image, photo, logo',
     classifiers=[

@@ -130,9 +130,8 @@ def watermark(url, args=''):
 
     # look for the specified watermark by name.  If it's not there, go no further
     try:
-        watermark = Watermark.objects.get(name=name,
-                                          is_active=True)
-    except:
+        watermark = Watermark.objects.get(name=name, is_active=True)
+    except Watermark.DoesNotExist:
         return url
 
     # iterate over all parameters to see what we need to do
