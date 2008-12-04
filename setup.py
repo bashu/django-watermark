@@ -59,7 +59,7 @@ Features
     * Corners: you can position your watermark in the corners of your images
     * Random: you can tell the filter to randomly generate a position for your watermark
 
-  * Scaling: the watermark can be scaled to cover your images
+  * Scaling: the watermark can be scaled to cover your images or use a specific scaling factor
   * Tiling: the watermark can be tiled across your images
   * Greyscale: you can convert the watermark to be greyscale before having it applied to the target image.
   * Rotation: you can rotate your watermark a certain number of degrees or have the rotation be random.
