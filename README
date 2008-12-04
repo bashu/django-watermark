@@ -8,7 +8,8 @@ This project provides a simple way for you to apply custom watermarks to images 
     * Relative: you can use percentages to place your watermark
     * Corners: you can position your watermark in the corners of your images
     * Random: you can tell the filter to randomly generate a position for your watermark
-  * Scaling: the watermark can be scaled to cover your images
+    * Center: you can place watermarks in the center of the target image
+  * Scaling: the watermark can be scaled to cover your images or specify a scaling factor to use
   * Tiling: the watermark can be tiled across your images
   * Greyscale: you can convert the watermark to be greyscale before having it applied to the target image.
   * Rotation: you can rotate your watermark a certain number of degrees or have the rotation be random.
@@ -21,7 +22,7 @@ I didn't write any of the code that actually applies the watermark.  I snagged i
 
 `django-watermark` requires a modern version of the Django framework.  By modern I simply mean a version with the `newforms-admin` functionality.  If you're running on Django 1.0 or later, you're good.
 
-`django-watermark` also relies upon the built-in `django.contrib.admin` and the [http://www.pythonware.com/products/pil/ Python Imaging Library] (PIL).
+`django-watermark` also relies upon the built-in `django.contrib.admin` and the [http://www.pythonware.com/products/pil/ Python Imaging Library] (PIL).  I built it using PIL 1.1.6, but it may work with previous versions.
 
 ==Installation==
 
@@ -94,13 +95,13 @@ The first parameter to the `watermark` filter _must_ be the name you specified f
 
 ===`position`===
 
-This one is quite customizable.  First, you can plug your watermark into one corner of your images by using one of `br`, `bl`, `tr`, and `tl`.  These represent 'bottom-right', 'bottom-left', 'top-right', and 'top-left' respectively.
+This one is quite customizable.  First, you can plug your watermark into one corner of your images by using one of `BR`, `BL`, `TR`, and `TL`.  These represent 'bottom-right', 'bottom-left', 'top-right', and 'top-left' respectively.
 
 Alternatively, you can use relative or absolute positioning for the watermark.  Relative positioning uses percentages; absolute positioning uses exact pixels.  You can mix and match these two modes of positioning, but you cannot mix and match relative/absolute with the corner positioning.  When using relative/absolute positioning, the value for the `position` parameter is `XxY`, where `X` is the left value and `Y` is the top value.  The left and top values must be separated with a lowercase `x`.
 
-If you wanted your watermark image to show up in the center of any image you want to watermark, you would use a position parameter such as `position=50%x50%`.  If you wanted the watermark to show up half-way between the left and right edges of the image and 100 pixels from the top, you would use a position parameter such as `position=50%x100`.
+If you wanted your watermark image to show up in the center of any image you want to watermark, you would use a position parameter such as `position=50%x50%` or even `position=C`.  If you wanted the watermark to show up half-way between the left and right edges of the image and 100 pixels from the top, you would use a position parameter such as `position=50%x100`.
 
-Finally, you may tell the filter to generate a position for your watermark dynamically.  To do this, use `position=R` and be sure you're using an uppercase 'R' (a lowercase 'r' would be detected as part of either `br` or `tr`).
+Finally, you may tell the filter to generate a position for your watermark dynamically.  To do this, use `position=R`.
 
 ===`opacity`===
 
@@ -108,11 +109,11 @@ This parameter allows you to specify the transparency of the applied watermark. 
 
 ===`tile`===
 
-If you want your watermark to tile across the entire image, you simply specify a parameter such as `tile=1`.  This parameter takes precedence over the `position` but not the `scale` parameter.  That means that if you specify `position` and `tile=1`, the `position` parameter will be ignored.  However, if you specify `tile=1` and `scale=1`, the `tile` parameter will be ignored.
+If you want your watermark to tile across the entire image, you simply specify a parameter such as `tile=1`.
 
 ===`scale`===
 
-If you'd like to have the watermark as big as possible on the target image and fully visible, you might want to use `scale=1`.  This parameter takes precendece over both the `tile` and `position` parameter.  That means that if you specify either of those parameters (`position` and `tile`) along with the `scale=1` parameter, only `scale` will be applied.
+If you'd like to have the watermark as big as possible on the target image and fully visible, you might want to use `scale=F`.  If you want to specify a particular scaling factor, just use something like `scale=1.43`.
 
 ===`greyscale`===
 
