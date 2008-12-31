@@ -106,7 +106,7 @@ def watermark(url, args=''):
         if key == 'position':
             position = value
         elif key == 'opacity':
-            opacity = value
+            opacity = utils._percent(value)
         elif key == 'tile':
             tile = bool(int(value))
         elif key == 'scale':
@@ -122,11 +122,11 @@ def watermark(url, args=''):
     mark = Image.open(watermark.image.path)
 
     # determine the actual value that the parameters provided will render
-    params = utils.determine_parameter_values(target, mark, position, int(opacity), scale, tile, greyscale, rotation)
+    params = utils.determine_parameter_values(target, mark, position, opacity, scale, tile, greyscale, rotation)
     params.update({
                     'base': base,
                     'watermark': watermark.id,
-                    'opacity': params['opacity'],
+                    'opacity': params['opacity'] * 100,
                     'left': params['position'][0],
                     'top': params['position'][1],
                     'ext': ext
