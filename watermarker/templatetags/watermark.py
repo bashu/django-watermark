@@ -67,9 +67,9 @@ def watermark(url, args=''):
         - 0 or 1 to specify whether or not the watermark shall be tiled across
             the entire image.
     - scale::
-        - a floating-point number above 0 to specify the scaling for the 
+        - a floating-point number above 0 to specify the scaling for the
             watermark.  If you want the watermark to be scaled to its maximum
-            without falling off the edge of the target image, use 'F'.  By 
+            without falling off the edge of the target image, use 'F'.  By
             default, scale is set to 1.0, or 1:1 scaling.
     - greyscale::
         - 0 or 1 to specify whether or not the watermark should be converted to
@@ -106,7 +106,7 @@ def watermark(url, args=''):
         if key == 'position':
             position = value
         elif key == 'opacity':
-            opacity = _percent(value)
+            opacity = value
         elif key == 'tile':
             tile = bool(int(value))
         elif key == 'scale':
@@ -120,7 +120,7 @@ def watermark(url, args=''):
     target_path = _get_path_from_url(url)
     target = Image.open(target_path)
     mark = Image.open(watermark.image.path)
-    
+
     # determine the actual value that the parameters provided will render
     params = utils.determine_parameter_values(target, mark, position, opacity, scale, tile, greyscale, rotation)
     params.update({
@@ -159,13 +159,13 @@ def watermark(url, args=''):
             return new_file
 
     # create the watermarked image on the filesystem
-    wm_image = utils.watermark(target, 
-                               mark, 
-                               position=position, 
-                               opacity=opacity, 
+    wm_image = utils.watermark(target,
+                               mark,
+                               position=position,
+                               opacity=opacity,
                                scale=scale,
                                tile=tile,
-                               greyscale=greyscale, 
+                               greyscale=greyscale,
                                rotation=rotation)
     wm_image.save(new_path, quality=QUALITY)
 
