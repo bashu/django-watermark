@@ -54,11 +54,11 @@ def reduce_opacity(img, opacity):
 
 def determine_scale(scale, img, mark):
     """
-    Scales an image using a specified ratio or 'F'.  If `scale` is 'F', the 
+    Scales an image using a specified ratio or 'F'.  If `scale` is 'F', the
     image is scaled to be as big as possible to fit in `img` without falling off
     the edges.  Returns the scaled `mark`.
     """
-    
+
     if scale:
         try:
             scale = float(scale)
@@ -69,7 +69,7 @@ def determine_scale(scale, img, mark):
             and scale.lower() == 'f':
             # scale, but preserve the aspect ratio
             scale = min(
-                        float(img.size[0]) / mark.size[0], 
+                        float(img.size[0]) / mark.size[0],
                         float(img.size[1]) / mark.size[1]
                        )
         elif not isinstance(scale, float) and not isinstance(scale, int):
@@ -88,7 +88,7 @@ def determine_rotation(rotation, mark):
     """
     Determines the number of degrees to rotate the watermark image.
     """
-    
+
     if (isinstance(rotation, str) or isinstance(rotation, unicode)) \
         and rotation.lower() == 'r':
         rotation = random.randint(0, 359)
@@ -107,16 +107,16 @@ def determine_position(position, img, mark):
         C: centered
         R: random
         X%xY%: relative positioning on both the X and Y axes
-        X%xY: relative positioning on the X axis and absolute positioning on the 
+        X%xY: relative positioning on the X axis and absolute positioning on the
               Y axis
         XxY%: absolute positioning on the X axis and relative positioning on the
               Y axis
         XxY: absolute positioning on both the X and Y axes
     """
-    
+
     max_left = abs(img.size[0] - mark.size[0])
     max_top = abs(img.size[1] - mark.size[1])
-    
+
     if not position:
         position = 'r'
 
@@ -124,7 +124,7 @@ def determine_position(position, img, mark):
         left, top = position
     elif isinstance(position, str) or isinstance(position, unicode):
         position = position.lower()
-        
+
         # corner positioning
         if position in ['tl', 'tr', 'br', 'bl']:
             if 't' in position:
@@ -149,12 +149,12 @@ def determine_position(position, img, mark):
         # relative or absolute positioning
         elif 'x' in position:
             left, top = position.split('x')
-            
+
             if '%' in left:
                 left = max_left * _percent(left)
             else:
                 left = _int(left)
-            
+
             if '%' in top:
                 top = max_top * _percent(top)
             else:
@@ -164,19 +164,19 @@ def determine_position(position, img, mark):
 
 def determine_parameter_values(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, greyscale=False, rotation=0):
     """
-    Examines the input parameters to determine what the actual values will be 
+    Examines the input parameters to determine what the actual values will be
     for generating the watermark.
     """
     position = determine_position(position, img, mark)
     scale = determine_scale(scale, img, mark)
     rotation = determine_rotation(rotation, mark)
-    
+
     return {
-        'position': position, 
-        'opacity':  opacity, 
-        'scale':    scale, 
-        'tile':     tile, 
-        'greyscale': greyscale, 
+        'position': position,
+        'opacity':  opacity,
+        'scale':    scale,
+        'tile':     tile,
+        'greyscale': greyscale,
         'rotation': rotation}
 
 def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, greyscale=False, rotation=0, return_name=False):
@@ -185,28 +185,28 @@ def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, grey
     """
     if opacity < 1:
         mark = reduce_opacity(mark, opacity)
-    
+
     scale = determine_scale(scale, img, mark)
     mark = mark.resize(scale)
 
     if greyscale and mark.mode != 'LA':
         mark = mark.convert('LA')
-    
+
     rotation = determine_rotation(rotation, mark)
     if rotation != 0:
         # give soem leeway for rotation overlapping
         new_w = mark.size[0] * 1.5
         new_h = mark.size[1] * 1.5
-        
+
         new_mark = Image.new('RGBA', (new_w, new_h), (0,0,0,0))
-        
+
         # center the watermark in the newly resized image
         new_l = (new_w - mark.size[0]) / 2
         new_t = (new_h - mark.size[1]) / 2
         new_mark.paste(mark, (new_l, new_t))
-        
+
         mark = new_mark.rotate(rotation)
-    
+
     position = determine_position(position, img, mark)
 
     if img.mode != 'RGBA':
@@ -221,7 +221,7 @@ def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, grey
     if tile:
         first_y = position[1] % mark.size[1] - mark.size[1]
         first_x = position[0] % mark.size[0] - mark.size[0]
-        
+
         for y in range(first_y, img.size[1], mark.size[1]):
             for x in range(first_x, img.size[0], mark.size[0]):
                 layer.paste(mark, (x, y))
@@ -234,25 +234,25 @@ def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, grey
 def test():
     im = Image.open('test.png')
     mark = Image.open('overlay.png')
-    watermark(im, mark, 
-                tile=True, 
-                opacity=0.5, 
+    watermark(im, mark,
+                tile=True,
+                opacity=0.5,
                 rotation=30).save('test1.png')
 
-    watermark(im, mark, 
+    watermark(im, mark,
                 scale='F').save('test2.png')
 
-    watermark(im, mark, 
-                position=(100, 100), 
-                opacity=0.5, 
-                greyscale=True, 
+    watermark(im, mark,
+                position=(100, 100),
+                opacity=0.5,
+                greyscale=True,
                 rotation=-45).save('test3.png')
 
-    watermark(im, mark, 
+    watermark(im, mark,
                 position='C',
-                tile=False, 
+                tile=False,
                 opacity=0.2,
-                scale=2, 
+                scale=2,
                 rotation=30).save('test4.png')
 
 if __name__ == '__main__':

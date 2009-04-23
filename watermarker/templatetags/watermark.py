@@ -3,6 +3,7 @@ from django.conf import settings
 from watermarker.models import Watermark
 from watermarker import utils
 from datetime import datetime
+from hashlib import sha1
 import Image
 import urlparse
 import os
@@ -144,13 +145,16 @@ def watermark(url, args=''):
 
     # make thumbnail filename
     wm_name = wm_name % params
+    wm_name_hash = sha1(wm_name).hexdigest() + ext
 
     # now revert the opacity to a percentage
     params['opacity'] = params['opacity'] / 100
 
     # figure out where the watermark would be saved on the filesystem
-    new_file = urlparse.urljoin(basedir, wm_name)
+    new_file = urlparse.urljoin(basedir, wm_name_hash)
     new_path = _get_path_from_url(new_file)
+
+    print locals()
 
     # see if the image already exists on the filesystem.  If it does, use it.
     if os.access(new_path, os.R_OK):
@@ -173,6 +177,6 @@ def watermark(url, args=''):
     wm_image.save(new_path, quality=QUALITY)
 
     # send back the URL to the new, watermarked image
-    return urlparse.urljoin(basedir, wm_name)
+    return urlparse.urljoin(basedir, wm_name_hash)
 
 register.filter(watermark)
