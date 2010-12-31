@@ -1,13 +1,13 @@
-from django import template
-from django.conf import settings
-from watermarker.models import Watermark
-from watermarker import utils
 from datetime import datetime
 from hashlib import sha1
 import Image
-import urlparse
 import os
-import random
+import urlparse
+
+from django.conf import settings
+from django import template
+from watermarker import utils
+from watermarker.models import Watermark
 
 register = template.Library()
 
