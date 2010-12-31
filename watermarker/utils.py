@@ -114,8 +114,8 @@ def determine_position(position, img, mark):
         XxY: absolute positioning on both the X and Y axes
     """
 
-    max_left = abs(img.size[0] - mark.size[0])
-    max_top = abs(img.size[1] - mark.size[1])
+    max_left = max(img.size[0] - mark.size[0], 0)
+    max_top = max(img.size[1] - mark.size[1], 0)
 
     if not position:
         position = 'r'
