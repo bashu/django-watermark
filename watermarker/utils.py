@@ -3,8 +3,10 @@ Utilities for applying a watermark to an image using PIL.
 
 Original Source: http://code.activestate.com/recipes/362879/
 """
+
 import Image, ImageEnhance
 import random
+import traceback
 
 def _percent(var):
     """
@@ -62,22 +64,21 @@ def determine_scale(scale, img, mark):
     if scale:
         try:
             scale = float(scale)
-        except ValueError:
+        except (ValueError, TypeError):
             pass
 
-        if (isinstance(scale, str) or isinstance(scale, unicode)) \
-            and scale.lower() == 'f':
+        if type(scale) in (str, unicode) and scale.lower() == 'f':
             # scale, but preserve the aspect ratio
             scale = min(
                         float(img.size[0]) / mark.size[0],
                         float(img.size[1]) / mark.size[1]
                        )
-        elif not isinstance(scale, float) and not isinstance(scale, int):
-            raise ValueError('Invalid scale value "%s"!  Valid values are 1) "F" for ratio-preserving scaling and 2) floating-point numbers and integers greater than 0.' % scale)
+        elif type(scale) not in (float, int):
+            raise ValueError('Invalid scale value "%s"!  Valid values are 1) "F" for ratio-preserving scaling and 2) floating-point numbers and integers greater than 0.' % (scale,))
 
         # determine the new width and height
-        w = int(mark.size[0] * scale)
-        h = int(mark.size[1] * scale)
+        w = int(mark.size[0] * float(scale))
+        h = int(mark.size[1] * float(scale))
 
         # apply the new width and height, and return the new `mark`
         return (w, h)
@@ -162,31 +163,35 @@ def determine_position(position, img, mark):
 
     return (left, top)
 
-def determine_parameter_values(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, greyscale=False, rotation=0):
+def determine_parameter_values(img, mark, position=(0, 0), opacity=1,
+    scale=1.0, tile=False, greyscale=False, rotation=0):
     """
     Examines the input parameters to determine what the actual values will be
     for generating the watermark.
     """
+
     position = determine_position(position, img, mark)
     scale = determine_scale(scale, img, mark)
     rotation = determine_rotation(rotation, mark)
 
     return {
-        'position': position,
-        'opacity':  opacity,
-        'scale':    scale,
-        'tile':     tile,
+        'position':  position,
+        'opacity':   opacity,
+        'scale':     scale,
+        'tile':      tile,
         'greyscale': greyscale,
-        'rotation': rotation}
+        'rotation':  rotation}
 
-def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, greyscale=False, rotation=0, return_name=False):
+def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, greyscale=False, rotation=0, return_name=False, **kwargs):
     """
     Adds a watermark to an image.
     """
     if opacity < 1:
         mark = reduce_opacity(mark, opacity)
 
-    scale = determine_scale(scale, img, mark)
+    if type(scale) != tuple:
+        scale = determine_scale(scale, img, mark)
+
     mark = mark.resize(scale)
 
     if greyscale and mark.mode != 'LA':
