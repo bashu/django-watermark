@@ -171,23 +171,25 @@ class Watermarker(object):
 
         # figure out where the watermark would be saved on the filesystem
         if obscure:
-            log.debug('Obscuring original image name.')
-            new_file = urlparse.urljoin(basedir, hash + ext)
+            log.debug('Obscuring original image name: %s => %s' % (wm_name, hash))
+            new_file = os.path.join(basedir, hash + ext)
         else:
             log.debug('Not obscuring original image name.')
-            # make sure the destination directory exists
-            try:
-                root = self.get_url_path(basedir)
-                os.makedirs(os.path.join(root, hash))
-            except OSError, exc:
-                if exc.errno == errno.EEXIST:
-                    # not to worry, directory exists
-                    pass
-                else:
-                    log.error('Error creating path: %s' % traceback.format_exc())
-                    raise
-
             new_file = os.path.join(basedir, hash, base + ext)
+
+        # make sure the destination directory exists
+        try:
+            root = self.get_url_path(new_file)
+            os.makedirs(os.path.dirname(root))
+        except OSError, exc:
+            if exc.errno == errno.EEXIST:
+                # not to worry, directory exists
+                pass
+            else:
+                log.error('Error creating path: %s' % traceback.format_exc())
+                raise
+        else:
+            log.debug('Created directory: %s' % root)
 
         return new_file
 
