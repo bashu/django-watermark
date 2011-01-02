@@ -86,9 +86,6 @@ class Watermarker(object):
           is 85.
         """
 
-        basedir = '%s/watermarked' % os.path.dirname(url)
-        base, ext = os.path.splitext(os.path.basename(url))
-
         # look for the specified watermark by name.  If it's not there, go no
         # further
         try:
@@ -96,6 +93,12 @@ class Watermarker(object):
         except Watermark.DoesNotExist:
             log.error('Watermark "%s" does not exist... Bailing out.' % name)
             return url
+
+        # make sure URL is a string
+        url = str(url)
+
+        basedir = '%s/watermarked' % os.path.dirname(url)
+        base, ext = os.path.splitext(os.path.basename(url))
 
         # open the target image file along with the watermark image
         target_path = self.get_url_path(url)
