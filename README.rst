@@ -116,6 +116,12 @@ watermark-less image.  As of version 0.1.6, you can specify
 ``WATERMARK_OBSCURE_ORIGINAL = False`` in your ``setings.py`` to make the
 original image file name accessible to the user.
 
+``django-watermark`` also lets you configure how random watermark positioning
+should work.  By default, a when a watermark is to be positioned randomly, only
+one watermarked image will be generated.  If you wish to generate a random
+position for an image's watermark on each request, set
+``WATERMARK_RANDOM_POSITION_ONCE`` to ``False`` in your ``settings.py``.
+
 Usage
 =====
 
@@ -182,6 +188,12 @@ are:
   filename.
 * ``quality`` - Set this to an integer between 0 and 100 to specify the quality
   of the resulting image.  Default is 85.
+* ``random_position_once`` - Set this to 0 or 1 to specify the random
+  positioning behavior for the image's watermark.  When set to 0, the watermark
+  will be randomly placed on each request.  When set to 1, the watermark will
+  be positioned randomly on the first request, and subsequent requests will use
+  the produced image.  Default is ``True`` (random positioning only happens on
+  first request).
 
 Examples
 ========

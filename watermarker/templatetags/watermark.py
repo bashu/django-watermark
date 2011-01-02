@@ -5,7 +5,6 @@ import errno
 import logging
 import os
 import traceback
-import urlparse
 
 from django.conf import settings
 from django import template
@@ -17,6 +16,7 @@ register = template.Library()
 # determine the quality of the image after the watermark is applied
 QUALITY = getattr(settings, 'WATERMARKING_QUALITY', 85)
 OBSCURE = getattr(settings, 'WATERMARK_OBSCURE_ORIGINAL', True)
+RANDOM_POS_ONCE = getattr(settings, 'WATERMARK_RANDOM_POSITION_ONCE', True)
 
 log = logging.getLogger('watermarker')
 
@@ -24,7 +24,7 @@ class Watermarker(object):
 
     def __call__(self, url, name, position=None, opacity=0.5, tile=False,
                  scale=1.0, greyscale=False, rotation=0, obscure=OBSCURE,
-                 quality=QUALITY):
+                 quality=QUALITY, random_position_once=RANDOM_POS_ONCE):
         """
         Creates a watermarked copy of an image.
 
@@ -103,21 +103,43 @@ class Watermarker(object):
         mark = Image.open(watermark.image.path)
 
         # determine the actual value that the parameters provided will render
-        params = utils.determine_parameter_values(target, mark, position,
-                                opacity, scale, tile, greyscale, rotation)
-        params.update({
-            'base': base,
-            'ext': ext,
-            'quality': quality,
+        random_position = bool(position is None or str(position).lower() == 'r')
+        scale = utils.determine_scale(scale, target, mark)
+        rotation = utils.determine_rotation(rotation, mark)
+        pos = utils.determine_position(position, target, mark)
+
+        # see if we need to create only one randomly positioned watermarked
+        # image
+        if not random_position or \
+            (not random_position_once and random_position):
+            log.debug('Generating random position for watermark each time')
+            position = pos
+        else:
+            log.debug('Random positioning watermark once')
+
+        params = {
+            'position':  position,
+            'opacity':   opacity,
+            'scale':     scale,
+            'tile':      tile,
+            'greyscale': greyscale,
+            'rotation':  rotation,
+            'base':      base,
+            'ext':       ext,
+            'quality':   quality,
             'watermark': watermark.id,
-            'opacity_int': int(params['opacity'] * 100),
-            'left': params['position'][0],
-            'top': params['position'][1],
-        })
+            'opacity_int': int(opacity * 100),
+            'left':      pos[0],
+            'top':       pos[1],
+        }
+        log.debug('Params: %s' % params)
 
         wm_name = self.watermark_name(mark, **params)
         wm_url = self.watermark_path(basedir, base, ext, wm_name, obscure)
         wm_path = self.get_url_path(wm_url)
+        log.debug('Watermark name: %s; URL: %s; Path: %s' % (
+            wm_name, wm_url, wm_path
+        ))
 
         # see if the image already exists on the filesystem.  If it does, use
         # it.
@@ -130,6 +152,9 @@ class Watermarker(object):
             if modified >= watermark.date_updated:
                 log.info('Watermark exists and has not changed.  Bailing out.')
                 return wm_url
+
+        # make sure the position is in our params for the watermark
+        params['position'] = pos
 
         self.create_watermark(target, mark, wm_path, **params)
 
@@ -148,20 +173,25 @@ class Watermarker(object):
     def watermark_name(self, mark, **kwargs):
         """Comes up with a good filename for the watermarked image"""
 
-        name = '%(base)s_wm_w%(watermark)i_o%(opacity_int)i_gs%(greyscale)i_r%(rotation)i'
-        if kwargs.get('position', None):
-            name += '_p%(left)sx%(top)s'
+        params = [
+            '%(base)s',
+            'wm',
+            'w%(watermark)i',
+            'o%(opacity_int)i',
+            'gs%(greyscale)i',
+            'r%(rotation)i',
+            '_p%(position)s',
+        ]
 
         scale = kwargs.get('scale', None)
         if scale and scale != mark.size:
-            name += '_s%i' % (float(kwargs['scale'][0]) / mark.size[0] * 100)
+            params.append('_s%i' % (float(kwargs['scale'][0]) / mark.size[0] * 100))
 
         if kwargs.get('tile', None):
-            name += '_tiled'
-
-        name += '%(ext)s'
+            params.append('_tiled')
 
         # make thumbnail filename
+        name = '%s%s' % ('_'.join(params), kwargs['ext'])
         return name % kwargs
 
     def watermark_path(self, basedir, base, ext, wm_name, obscure=True):
@@ -215,6 +245,7 @@ def watermark(url, args=''):
     position = None
     obscure = OBSCURE
     quality = QUALITY
+    random_position_once = RANDOM_POS_ONCE
 
     # iterate over all parameters to see what we need to do
     for arg in args:
@@ -235,9 +266,11 @@ def watermark(url, args=''):
             obscure = bool(int(value))
         elif key == 'quality':
             quality = int(value)
+        elif key == 'random_position_once':
+            random_position_once = bool(int(value))
 
     mark = Watermarker()
     return mark(url, name, position, opacity, tile, scale, greyscale,
-                  rotation, obscure, quality)
+                  rotation, obscure, quality, random_position_once)
 
 register.filter(watermark)

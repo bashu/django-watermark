@@ -163,25 +163,6 @@ def determine_position(position, img, mark):
 
     return (left, top)
 
-def determine_parameter_values(img, mark, position=(0, 0), opacity=1,
-    scale=1.0, tile=False, greyscale=False, rotation=0):
-    """
-    Examines the input parameters to determine what the actual values will be
-    for generating the watermark.
-    """
-
-    position = determine_position(position, img, mark)
-    scale = determine_scale(scale, img, mark)
-    rotation = determine_rotation(rotation, mark)
-
-    return {
-        'position':  position,
-        'opacity':   opacity,
-        'scale':     scale,
-        'tile':      tile,
-        'greyscale': greyscale,
-        'rotation':  rotation}
-
 def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, greyscale=False, rotation=0, return_name=False, **kwargs):
     """
     Adds a watermark to an image.
@@ -199,7 +180,7 @@ def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, grey
 
     rotation = determine_rotation(rotation, mark)
     if rotation != 0:
-        # give soem leeway for rotation overlapping
+        # give some leeway for rotation overlapping
         new_w = mark.size[0] * 1.5
         new_h = mark.size[1] * 1.5
 
