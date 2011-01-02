@@ -253,6 +253,8 @@ def watermark(url, args=''):
     # iterate over all parameters to see what we need to do
     for arg in args:
         key, value = arg.split('=')
+        key = key.strip()
+        value = value.strip()
         if key == 'position':
             position = value
         elif key == 'opacity':
