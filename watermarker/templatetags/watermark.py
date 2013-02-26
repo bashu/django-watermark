@@ -10,6 +10,7 @@ from django.conf import settings
 from django import template
 from watermarker import utils
 from watermarker.models import Watermark
+from django.utils.timezone import make_aware  # Datetime aware patch
 
 register = template.Library()
 
@@ -150,6 +151,8 @@ class Watermarker(object):
             # see if the Watermark object was modified since the file was
             # created
             modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
+            # datetime aware patch: convert 'modified' to datetime-awared based on watermark tzinfo
+            modified = make_aware(modified, watermark.date_updated.tzinfo)
 
             # only return the old file if things appear to be the same
             if modified >= watermark.date_updated:
