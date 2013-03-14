@@ -1,6 +1,7 @@
 from datetime import datetime
 from hashlib import sha1
-import Image
+#import Image
+from PIL import Image
 import errno
 import logging
 import os
@@ -10,7 +11,9 @@ from django.conf import settings
 from django import template
 from watermarker import utils
 from watermarker.models import Watermark
-from django.utils.timezone import make_aware  # Datetime aware patch
+
+# Datetime aware patch
+from django.utils.timezone import make_aware
 
 register = template.Library()
 
@@ -21,8 +24,8 @@ RANDOM_POS_ONCE = getattr(settings, 'WATERMARK_RANDOM_POSITION_ONCE', True)
 
 log = logging.getLogger('watermarker')
 
-class Watermarker(object):
 
+class Watermarker(object):
     def __call__(self, url, name, position=None, opacity=0.5, tile=False,
                  scale=1.0, greyscale=False, rotation=0, obscure=OBSCURE,
                  quality=QUALITY, random_position_once=RANDOM_POS_ONCE):
@@ -94,7 +97,6 @@ class Watermarker(object):
         except Watermark.DoesNotExist:
             log.error('Watermark "%s" does not exist... Bailing out.' % name)
             return url
-
         # make sure URL is a string
         url = str(url)
 
@@ -107,19 +109,18 @@ class Watermarker(object):
         mark = Image.open(watermark.image.path)
 
         # determine the actual value that the parameters provided will render
-        random_position = bool(position is None or str(position).lower() == 'r')
-        scale = utils.determine_scale(scale, target, mark)
-        rotation = utils.determine_rotation(rotation, mark)
-        pos = utils.determine_position(position, target, mark)
+        # random_position = bool(position is None or str(position).lower() == 'r')
+        # scale = utils.determine_scale(scale, target, mark)
+        # rotation = utils.determine_rotation(rotation, mark)
+        # pos = utils.determine_position(position, target, mark)
 
         # see if we need to create only one randomly positioned watermarked
         # image
-        if not random_position or \
-            (not random_position_once and random_position):
-            log.debug('Generating random position for watermark each time')
-            position = pos
-        else:
-            log.debug('Random positioning watermark once')
+        # if not random_position or (not random_position_once and random_position):
+        #     log.debug('Generating random position for watermark each time')
+        #     position = pos
+        # else:
+        #     log.debug('Random positioning watermark once')
 
         params = {
             'position':  position,
@@ -133,8 +134,8 @@ class Watermarker(object):
             'quality':   quality,
             'watermark': watermark.id,
             'opacity_int': int(opacity * 100),
-            'left':      pos[0],
-            'top':       pos[1],
+            # 'left':      pos[0],
+            # 'top':       pos[1],
         }
         log.debug('Params: %s' % params)
 
@@ -157,22 +158,22 @@ class Watermarker(object):
             # only return the old file if things appear to be the same
             if modified >= watermark.date_updated:
                 log.info('Watermark exists and has not changed.  Bailing out.')
+                print('hit')
                 return wm_url
 
         # make sure the position is in our params for the watermark
-        params['position'] = pos
+        # params['position'] = pos
 
         self.create_watermark(target, mark, wm_path, **params)
 
         # send back the URL to the new, watermarked image
         return wm_url
 
-    def get_url_path(self, url, root=settings.MEDIA_ROOT,
-        url_root=settings.MEDIA_URL):
+    def get_url_path(self, url, root=settings.MEDIA_ROOT, url_root=settings.MEDIA_URL):
         """Makes a filesystem path from the specified URL"""
 
         if url.startswith(url_root):
-            url = url[len(url_root):] # strip media root url
+            url = url[len(url_root):]  # strip media root url
 
         return os.path.normpath(os.path.join(root, url))
 
@@ -190,7 +191,7 @@ class Watermarker(object):
         ]
 
         scale = kwargs.get('scale', None)
-        if scale and scale != mark.size:
+        if scale and not isinstance(scale, basestring) and scale != mark.size:
             params.append('_s%i' % (float(kwargs['scale'][0]) / mark.size[0] * 100))
 
         if kwargs.get('tile', None):
