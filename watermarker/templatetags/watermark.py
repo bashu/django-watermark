@@ -8,6 +8,7 @@ import traceback
 
 from django.conf import settings
 from django import template
+from django.utils import timezone
 from watermarker import utils
 from watermarker.models import Watermark
 
@@ -150,6 +151,8 @@ class Watermarker(object):
             # see if the Watermark object was modified since the file was
             # created
             modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
+            # Django 1.4+ timezone support
+            modified = timezone.make_aware(modified, timezone.get_default_timezone())
 
             # only return the old file if things appear to be the same
             if modified >= watermark.date_updated:
