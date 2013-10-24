@@ -5,6 +5,7 @@ import errno
 import logging
 import os
 import traceback
+from urllib import unquote
 
 from django.conf import settings
 from django import template
@@ -252,6 +253,8 @@ def watermark(url, args=''):
     obscure = OBSCURE
     quality = QUALITY
     random_position_once = RANDOM_POS_ONCE
+
+    url = unquote(url)
 
     # iterate over all parameters to see what we need to do
     for arg in args:
