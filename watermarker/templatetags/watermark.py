@@ -238,6 +238,7 @@ class Watermarker(object):
 
         return im
 
+
 def watermark(url, args=''):
     """Returns the URL to a watermarked copy of the image specified."""
 
