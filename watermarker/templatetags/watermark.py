@@ -107,6 +107,21 @@ class Watermarker(object):
         target = Image.open(target_path)
         mark = Image.open(watermark.image.path)
 
+        # determine the actual value that the parameters provided will render
+        random_position = bool(position is None or str(position).lower() == 'r')
+        scale = utils.determine_scale(scale, target, mark)
+        rotation = utils.determine_rotation(rotation, mark)
+        pos = utils.determine_position(position, target, mark)
+
+        # see if we need to create only one randomly positioned watermarked
+        # image
+        if not random_position or \
+            (not random_position_once and random_position):
+            log.debug('Generating random position for watermark each time')
+            position = pos
+        else:
+            log.debug('Random positioning watermark once')
+
         params = {
             'position':  position,
             'opacity':   opacity,
@@ -119,6 +134,8 @@ class Watermarker(object):
             'quality':   quality,
             'watermark': watermark.id,
             'opacity_int': int(opacity * 100),
+            'left':      pos[0],
+            'top':       pos[1],
         }
         log.debug('Params: %s' % params)
 
@@ -142,6 +159,9 @@ class Watermarker(object):
             if modified >= watermark.date_updated:
                 log.info('Watermark exists and has not changed.  Bailing out.')
                 return wm_url
+
+        # make sure the position is in our params for the watermark
+        params['position'] = pos
 
         self.create_watermark(target, mark, wm_path, **params)
 
