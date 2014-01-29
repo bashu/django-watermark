@@ -110,7 +110,7 @@ class Watermarker(object):
         # determine the actual value that the parameters provided will render
         random_position = bool(position is None or str(position).lower() == 'r')
         scale = utils.determine_scale(scale, target, mark)
-        mark = mark.resize(scale)
+        mark = mark.resize(scale, resample=Image.ANTIALIAS)
         rotation = utils.determine_rotation(rotation, mark)
         pos = utils.determine_position(position, target, mark)
 
