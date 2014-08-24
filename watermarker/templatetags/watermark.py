@@ -1,6 +1,11 @@
 from datetime import datetime
 from hashlib import sha1
-import Image
+from django.utils import timezone
+
+try:
+    import Image
+except ImportError:
+    from PIL import Image
 import errno
 import logging
 import os
@@ -152,7 +157,7 @@ class Watermarker(object):
             modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
 
             # only return the old file if things appear to be the same
-            if modified >= watermark.date_updated:
+            if timezone.make_aware(modified, timezone.utc) >= watermark.date_updated:
                 log.info('Watermark exists and has not changed.  Bailing out.')
                 return wm_url
 
