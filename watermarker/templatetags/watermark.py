@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 from hashlib import sha1
 from PIL import Image
 import errno
@@ -19,6 +19,24 @@ OBSCURE = getattr(settings, 'WATERMARK_OBSCURE_ORIGINAL', True)
 RANDOM_POS_ONCE = getattr(settings, 'WATERMARK_RANDOM_POSITION_ONCE', True)
 
 log = logging.getLogger('watermarker')
+
+def utc_mktime(utc_tuple):
+    """Returns number of seconds elapsed since epoch
+
+    Note that no timezone are taken into consideration.
+
+    utc tuple must be: (year, month, day, hour, minute, second)
+
+    """
+
+    if len(utc_tuple) == 6:
+        utc_tuple += (0, 0, 0)
+    return time.mktime(utc_tuple) - time.mktime((1970, 1, 1, 0, 0, 0, 0, 0, 0))
+
+def datetime_to_timestamp(dt):
+    """Converts a datetime object to UTC timestamp"""
+
+    return int(utc_mktime(dt.timetuple()))
 
 class Watermarker(object):
 
@@ -152,7 +170,7 @@ class Watermarker(object):
             modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
 
             # only return the old file if things appear to be the same
-            if modified >= watermark.date_updated:
+            if modified >= datetime_to_timestamp(watermark.date_updated):
                 log.info('Watermark exists and has not changed.  Bailing out.')
                 return wm_url
 
