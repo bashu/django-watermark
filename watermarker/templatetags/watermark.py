@@ -1,6 +1,6 @@
 from datetime import datetime
 from hashlib import sha1
-import Image
+from PIL import Image
 import errno
 import logging
 import os
