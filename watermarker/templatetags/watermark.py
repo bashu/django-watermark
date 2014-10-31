@@ -5,6 +5,7 @@ import errno
 import logging
 import os
 import traceback
+import urllib
 
 from django.utils import timezone
 from django.conf import settings
@@ -173,7 +174,7 @@ class Watermarker(object):
         if url.startswith(url_root):
             url = url[len(url_root):] # strip media root url
 
-        return os.path.normpath(os.path.join(root, url))
+        return os.path.normpath(os.path.join(root, urllib.url2pathname(url)))
 
     def watermark_name(self, mark, **kwargs):
         """Comes up with a good filename for the watermarked image"""
