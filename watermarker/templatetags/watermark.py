@@ -5,7 +5,10 @@ import errno
 import logging
 import os
 import traceback
-from urllib import unquote
+try:
+    from urllib.parse import unquote
+except: ImportError
+    from urllib import unquote
 
 from django.conf import settings
 from django import template
