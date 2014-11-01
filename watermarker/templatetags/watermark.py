@@ -219,7 +219,7 @@ class Watermarker(object):
         try:
             root = self.get_url_path(new_file)
             os.makedirs(os.path.dirname(root))
-        except OSError, exc:
+        except OSError as exc:
             if exc.errno == errno.EEXIST:
                 # not to worry, directory exists
                 pass
