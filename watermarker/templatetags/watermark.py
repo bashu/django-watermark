@@ -7,7 +7,7 @@ import os
 import traceback
 try:
     from urllib.parse import unquote
-except: ImportError
+except ImportError:
     from urllib import unquote
 
 from django.conf import settings
