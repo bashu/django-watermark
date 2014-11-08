@@ -1,5 +1,10 @@
-from django.db import models
+# -*- coding: utf-8 -*-
 
+from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
+
+
+@python_2_unicode_compatible
 class Watermark(models.Model):
     name = models.CharField(max_length=50)
     image = models.ImageField(upload_to='watermarks')
@@ -7,7 +12,7 @@ class Watermark(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:

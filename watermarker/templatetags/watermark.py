@@ -1,13 +1,20 @@
+# -*- coding: utf-8 -*-
+
 from datetime import datetime
 from hashlib import sha1
-import Image
+from PIL import Image
 import errno
 import logging
 import os
 import traceback
+try:
+    from urllib.parse import unquote
+except ImportError:
+    from urllib import unquote
 
 from django.conf import settings
 from django import template
+from django.utils import timezone
 from watermarker import utils
 from watermarker.models import Watermark
 
@@ -108,6 +115,7 @@ class Watermarker(object):
         # determine the actual value that the parameters provided will render
         random_position = bool(position is None or str(position).lower() == 'r')
         scale = utils.determine_scale(scale, target, mark)
+        mark = mark.resize(scale, resample=Image.ANTIALIAS)
         rotation = utils.determine_rotation(rotation, mark)
         pos = utils.determine_position(position, target, mark)
 
@@ -150,6 +158,8 @@ class Watermarker(object):
             # see if the Watermark object was modified since the file was
             # created
             modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
+            # Django 1.4+ timezone support
+            modified = timezone.make_aware(modified, timezone.get_default_timezone())
 
             # only return the old file if things appear to be the same
             if modified >= watermark.date_updated:
@@ -200,7 +210,10 @@ class Watermarker(object):
     def watermark_path(self, basedir, base, ext, wm_name, obscure=True):
         """Determines an appropriate watermark path"""
 
-        hash = sha1(wm_name).hexdigest()
+        try:
+            hash = sha1(wm_name).hexdigest()
+        except TypeError:
+            hash = sha1(wm_name.encode('utf-8')).hexdigest()
 
         # figure out where the watermark would be saved on the filesystem
         if obscure:
@@ -214,7 +227,7 @@ class Watermarker(object):
         try:
             root = self.get_url_path(new_file)
             os.makedirs(os.path.dirname(root))
-        except OSError, exc:
+        except OSError as exc:
             if exc.errno == errno.EEXIST:
                 # not to worry, directory exists
                 pass
@@ -234,6 +247,7 @@ class Watermarker(object):
 
         return im
 
+
 def watermark(url, args=''):
     """Returns the URL to a watermarked copy of the image specified."""
 
@@ -249,6 +263,8 @@ def watermark(url, args=''):
     obscure = OBSCURE
     quality = QUALITY
     random_position_once = RANDOM_POS_ONCE
+
+    url = unquote(url)
 
     # iterate over all parameters to see what we need to do
     for arg in args:
