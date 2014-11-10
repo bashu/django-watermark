@@ -5,7 +5,9 @@ import errno
 import logging
 import os
 import traceback
+import urllib
 
+from django.utils import timezone
 from django.conf import settings
 from django import template
 from watermarker import utils
@@ -19,6 +21,7 @@ OBSCURE = getattr(settings, 'WATERMARK_OBSCURE_ORIGINAL', True)
 RANDOM_POS_ONCE = getattr(settings, 'WATERMARK_RANDOM_POSITION_ONCE', True)
 
 log = logging.getLogger('watermarker')
+
 
 class Watermarker(object):
 
@@ -152,7 +155,7 @@ class Watermarker(object):
             modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
 
             # only return the old file if things appear to be the same
-            if modified >= watermark.date_updated:
+            if timezone.make_aware(modified, timezone.get_default_timezone()) >= watermark.date_updated:
                 log.info('Watermark exists and has not changed.  Bailing out.')
                 return wm_url
 
@@ -171,7 +174,7 @@ class Watermarker(object):
         if url.startswith(url_root):
             url = url[len(url_root):] # strip media root url
 
-        return os.path.normpath(os.path.join(root, url))
+        return os.path.normpath(os.path.join(root, urllib.url2pathname(url)))
 
     def watermark_name(self, mark, **kwargs):
         """Comes up with a good filename for the watermarked image"""
