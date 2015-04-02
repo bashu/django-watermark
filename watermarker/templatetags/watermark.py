@@ -4,9 +4,9 @@ from datetime import datetime
 from hashlib import sha1
 from PIL import Image
 import errno
-import logging
+#import logging
 import os
-import traceback
+#import traceback
 try:
     from urllib.parse import unquote
 except ImportError:
@@ -25,7 +25,7 @@ QUALITY = getattr(settings, 'WATERMARKING_QUALITY', 85)
 OBSCURE = getattr(settings, 'WATERMARK_OBSCURE_ORIGINAL', True)
 RANDOM_POS_ONCE = getattr(settings, 'WATERMARK_RANDOM_POSITION_ONCE', True)
 
-log = logging.getLogger('watermarker')
+#log = logging.getLogger('watermarker')
 
 class Watermarker(object):
 
@@ -98,7 +98,7 @@ class Watermarker(object):
         try:
             watermark = Watermark.objects.get(name=name, is_active=True)
         except Watermark.DoesNotExist:
-            log.error('Watermark "%s" does not exist... Bailing out.' % name)
+            #log.error('Watermark "%s" does not exist... Bailing out.' % name)
             return url
 
         # make sure URL is a string
@@ -123,10 +123,10 @@ class Watermarker(object):
         # image
         if not random_position or \
             (not random_position_once and random_position):
-            log.debug('Generating random position for watermark each time')
+            #log.debug('Generating random position for watermark each time')
             position = pos
-        else:
-            log.debug('Random positioning watermark once')
+        #else:
+            #log.debug('Random positioning watermark once')
 
         params = {
             'position':  position,
@@ -143,14 +143,14 @@ class Watermarker(object):
             'left':      pos[0],
             'top':       pos[1],
         }
-        log.debug('Params: %s' % params)
+        #log.debug('Params: %s' % params)
 
         wm_name = self.watermark_name(mark, **params)
         wm_url = self.watermark_path(basedir, base, ext, wm_name, obscure)
         wm_path = self.get_url_path(wm_url)
-        log.debug('Watermark name: %s; URL: %s; Path: %s' % (
-            wm_name, wm_url, wm_path
-        ))
+        #log.debug('Watermark name: %s; URL: %s; Path: %s' % (
+        #    wm_name, wm_url, wm_path
+        #))
 
         # see if the image already exists on the filesystem.  If it does, use
         # it.
@@ -163,7 +163,7 @@ class Watermarker(object):
 
             # only return the old file if things appear to be the same
             if modified >= watermark.date_updated:
-                log.info('Watermark exists and has not changed.  Bailing out.')
+                #log.info('Watermark exists and has not changed.  Bailing out.')
                 return wm_url
 
         # make sure the position is in our params for the watermark
@@ -176,7 +176,9 @@ class Watermarker(object):
 
     def get_url_path(self, url, root=settings.MEDIA_ROOT,
         url_root=settings.MEDIA_URL):
-        """Makes a filesystem path from the specified URL"""
+        """
+        Makes a filesystem path from the specified URL.
+        """
 
         if url.startswith(url_root):
             url = url[len(url_root):] # strip media root url
@@ -184,7 +186,9 @@ class Watermarker(object):
         return os.path.normpath(os.path.join(root, url))
 
     def watermark_name(self, mark, **kwargs):
-        """Comes up with a good filename for the watermarked image"""
+        """
+        Comes up with a good filename for the watermarked image.
+        """
 
         params = [
             '%(base)s',
@@ -208,20 +212,21 @@ class Watermarker(object):
         return name % kwargs
 
     def watermark_path(self, basedir, base, ext, wm_name, obscure=True):
-        """Determines an appropriate watermark path"""
-
-        try:
-            hash = sha1(wm_name).hexdigest()
-        except TypeError:
-            hash = sha1(wm_name.encode('utf-8')).hexdigest()
+        """
+        Determines an appropriate watermark path.
+        """
 
         # figure out where the watermark would be saved on the filesystem
         if obscure:
-            log.debug('Obscuring original image name: %s => %s' % (wm_name, hash))
+            try:
+                hash = sha1(wm_name).hexdigest()
+            except TypeError:
+                hash = sha1(wm_name.encode('utf-8')).hexdigest()
+            #log.debug('Obscuring original image name: %s => %s' % (wm_name, hash))
             new_file = os.path.join(basedir, hash + ext)
         else:
-            log.debug('Not obscuring original image name.')
-            new_file = os.path.join(basedir, hash, base + ext)
+            #log.debug('Not obscuring original image name.')
+            new_file = os.path.join(basedir, base + ext)
 
         # make sure the destination directory exists
         try:
@@ -232,15 +237,17 @@ class Watermarker(object):
                 # not to worry, directory exists
                 pass
             else:
-                log.error('Error creating path: %s' % traceback.format_exc())
+                #log.error('Error creating path: %s' % traceback.format_exc())
                 raise
-        else:
-            log.debug('Created directory: %s' % root)
+        #else:
+            #log.debug('Created directory: %s' % root)
 
         return new_file
 
     def create_watermark(self, target, mark, path, quality=QUALITY, **kwargs):
-        """Create the watermarked image on the filesystem"""
+        """
+        Create the watermarked image on the filesystem.
+        """
 
         im = utils.watermark(target, mark, **kwargs)
         im.save(path, quality=quality)
@@ -249,7 +256,9 @@ class Watermarker(object):
 
 
 def watermark(url, args=''):
-    """Returns the URL to a watermarked copy of the image specified."""
+    """
+    Returns the URL to a watermarked copy of the image specified.
+    """
 
     # initialize some variables
     args = args.split(',')
