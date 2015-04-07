@@ -27,6 +27,7 @@ RANDOM_POS_ONCE = getattr(settings, 'WATERMARK_RANDOM_POSITION_ONCE', True)
 
 #log = logging.getLogger('watermarker')
 
+
 class Watermarker(object):
 
     def __call__(self, url, name, position=None, opacity=0.5, tile=False,
@@ -119,6 +120,9 @@ class Watermarker(object):
         rotation = utils.determine_rotation(rotation, mark)
         pos = utils.determine_position(position, target, mark)
 
+        # file status for modification date and size
+        fstat = os.stat(target_path)
+
         # see if we need to create only one randomly positioned watermarked
         # image
         if not random_position or \
@@ -129,19 +133,21 @@ class Watermarker(object):
             #log.debug('Random positioning watermark once')
 
         params = {
-            'position':  position,
-            'opacity':   opacity,
-            'scale':     scale,
-            'tile':      tile,
-            'greyscale': greyscale,
-            'rotation':  rotation,
-            'base':      base,
-            'ext':       ext,
-            'quality':   quality,
-            'watermark': watermark.id,
+            'position':    position,
+            'opacity':     opacity,
+            'scale':       scale,
+            'tile':        tile,
+            'greyscale':   greyscale,
+            'rotation':    rotation,
+            'base':        base,
+            'ext':         ext,
+            'quality':     quality,
+            'watermark':   watermark.id,
             'opacity_int': int(opacity * 100),
-            'left':      pos[0],
-            'top':       pos[1],
+            'left':        pos[0],
+            'top':         pos[1],
+            'st_mtime':    fstat.st_mtime,
+            'st_size':     fstat.st_size
         }
         #log.debug('Params: %s' % params)
 
@@ -174,22 +180,22 @@ class Watermarker(object):
         # send back the URL to the new, watermarked image
         return wm_url
 
+
     def get_url_path(self, url, root=settings.MEDIA_ROOT,
-        url_root=settings.MEDIA_URL):
+                     url_root=settings.MEDIA_URL):
         """
         Makes a filesystem path from the specified URL.
         """
-
         if url.startswith(url_root):
             url = url[len(url_root):] # strip media root url
 
         return os.path.normpath(os.path.join(root, url))
 
+
     def watermark_name(self, mark, **kwargs):
         """
         Comes up with a good filename for the watermarked image.
         """
-
         params = [
             '%(base)s',
             'wm',
@@ -197,7 +203,9 @@ class Watermarker(object):
             'o%(opacity_int)i',
             'gs%(greyscale)i',
             'r%(rotation)i',
-            '_p%(position)s',
+            'fm%(st_mtime)i',
+            'fz%(st_size)i',
+            'p%(position)s',
         ]
 
         scale = kwargs.get('scale', None)
@@ -210,6 +218,7 @@ class Watermarker(object):
         # make thumbnail filename
         name = '%s%s' % ('_'.join(params), kwargs['ext'])
         return name % kwargs
+
 
     def watermark_path(self, basedir, base, ext, wm_name, obscure=True):
         """
@@ -243,6 +252,7 @@ class Watermarker(object):
             #log.debug('Created directory: %s' % root)
 
         return new_file
+
 
     def create_watermark(self, target, mark, path, quality=QUALITY, **kwargs):
         """
