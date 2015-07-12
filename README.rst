@@ -17,7 +17,7 @@ Authored by `Josh VanderLinden <http://www.codekoala.com//>`_, and some great
     :target: https://pypi.python.org/pypi/django-watermark/
              
 Features
-========
+--------
 
 * Opacity: the filter allows you to specify the transparency level for your
   watermark image
@@ -40,66 +40,27 @@ Features
   the rotation be random.
 
 Requirements
-============
+------------
 
-``django-watermark`` requires a modern version of the Django framework.  By
-modern I simply mean a version with the ``newforms-admin`` functionality.  If
-you're running on Django 1.0 or later, you're good.
+``django-watermark`` requires a modern version of the Django
+framework.  By modern I simply mean a version with the
+``newforms-admin`` functionality.  If you're running on Django 1.0 or
+later, you're good.
 
-``django-watermark`` also relies upon the built-in ``django.contrib.admin`` and
-the [http://www.pythonware.com/products/pil/ Python Imaging Library] (PIL).  I
-built it using PIL 1.1.6, but it may work with previous versions.
+``django-watermark`` also relies upon the built-in ``django.contrib.admin``
+and the `Python Imaging Library <http://www.pythonware.com/products/pil/>`_ (PIL).
+I built it using PIL 1.1.6, but it may work with previous versions.
 
 Installation
-============
+------------
 
-Download ``django-watermark`` using *one* of the following methods:
-
-easy_install/pip
-----------------
-
-You can download the package from the `CheeseShop
-<http://pypi.python.org/pypi/django-watermark/>`_ or use one of these commands::
-
-    easy_install django-watermark
-    pip install -U django-watermark
-
-to download and install ``django-watermark``.
-
-Package Download
-----------------
-
-Download the latest ``.tar.gz``, ``.tar.bz2``, or ``.zip`` file from the
-downloads section and extract it somewhere you'll remember.  Use ``python
-setup.py install`` to install it.
-
-Clone From Version Control
---------------------------
-
-You can get the latest copy of the source from any of these official mirrors::
-
-    hg clone http://bitbucket.org/codekoala/django-watermark
-    git clone http://github.com/codekoala/django-watermark.git
-    hg clone http://django-watermark.googlecode.com/hg django-watermark
-
-Verifying Installation
-----------------------
-
-The easiest way to ensure that you have successfully installed Pendulum is to
-execute a command such as::
-
-    python -c "import watermarker; print watermarker.get_version()"
-
-If that displays the version of ``django-watermark`` that you tried to install,
-you're good to roll.  If you see something other than that, you probably need
-to check your ``PYTHONPATH`` environment variable.
-
-Configuration
-=============
+Either clone this repository into your project, or install with ``pip install django-watermark``
 
 First of all, you must add this project to your list of ``INSTALLED_APPS`` in
 ``settings.py``::
 
+.. code-block:: python
+  
     INSTALLED_APPS = (
         'django.contrib.admin',
         'django.contrib.auth',
@@ -111,8 +72,12 @@ First of all, you must add this project to your list of ``INSTALLED_APPS`` in
         ...
     )
 
-Run ``manage.py syncdb``.  This creates the tables in your database that are
-necessary for operation.
+Run ``./manage.py syncdb``. This creates the tables in your database
+that are necessary for operation.
+
+
+Configuration (optional)
+------------------------
 
 While we're in this section, I might as well mention a settings variable that
 you can override: ``WATERMARKING_QUALITY``.  This should be an integer between
@@ -131,13 +96,13 @@ position for an image's watermark on each request, set
 ``WATERMARK_RANDOM_POSITION_ONCE`` to ``False`` in your ``settings.py``.
 
 Usage
-=====
+-----
 
 As mentioned above, you have several options when using ``django-watermark``.
 The first thing you must do is load the filter for the template in which you
 wish to apply watermarks to your images.
 
-::
+.. code-block:: html+django
 
     {% load watermark %}
 
@@ -204,7 +169,7 @@ are:
   first request).
 
 Examples
-========
+--------
 
 * ``{{ image_url|watermark:"My Watermark,position=br,opacity=35" }}``
 
@@ -232,10 +197,13 @@ Examples
   at a transparency level of 40%.
 
 Credits
-=======
+-------
 
 I didn't write any of the code that actually applies the watermark.  I snagged
 it from http://code.activestate.com/recipes/362879/ and turned it into a Django
 pluggable application. Props to Shane Hathaway.
 
-  
+License
+-------
+
+``django-watermark`` is released under the BSD license.
