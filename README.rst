@@ -1,6 +1,21 @@
-This project provides a simple way for you to apply custom watermarks to images
-on your Django-powered website.
+django-watermark
+================
 
+This project provides a simple way for you to apply custom watermarks
+to images on your Django-powered website.
+
+Authored by `Josh VanderLinden <http://www.codekoala.com//>`_, and some great
+`contributors <https://github.com/codekoala/django-watermark/contributors>`_.
+
+.. image:: https://img.shields.io/pypi/v/django-watermark.svg
+    :target: https://pypi.python.org/pypi/django-watermark/
+
+.. image:: https://img.shields.io/pypi/dm/django-watermark.svg
+    :target: https://pypi.python.org/pypi/django-watermark/
+
+.. image:: https://img.shields.io/github/license/codekoala/django-watermark.svg
+    :target: https://pypi.python.org/pypi/django-watermark/
+             
 Features
 ========
 
@@ -9,12 +24,12 @@ Features
 * Watermark positioning: you have several options for positioning watermarks on
   your images
 
-    * Absolute: you can specify exact pixel locations for your watermark
-    * Relative: you can use percentages to place your watermark
-    * Corners: you can position your watermark in the corners of your images
-    * Random: you can tell the filter to randomly generate a position for your
-      watermark
-    * Center: you can place watermarks in the center of the target image
+  * Absolute: you can specify exact pixel locations for your watermark
+  * Relative: you can use percentages to place your watermark
+  * Corners: you can position your watermark in the corners of your images
+  * Random: you can tell the filter to randomly generate a position for your
+    watermark
+  * Center: you can place watermarks in the center of the target image
 
 * Scaling: the watermark can be scaled to cover your images or specify a
   scaling factor to use
@@ -23,13 +38,6 @@ Features
   applied to the target image.
 * Rotation: you can rotate your watermark a certain number of degrees or have
   the rotation be random.
-
-Credits
-=======
-
-I didn't write any of the code that actually applies the watermark.  I snagged
-it from http://code.activestate.com/recipes/362879/ and turned it into a Django
-pluggable application.  Props to Shane Hathaway.
 
 Requirements
 ============
@@ -222,3 +230,12 @@ Examples
 
   Looks for a watermark called "w00t", tiles it across the entire target image,
   at a transparency level of 40%.
+
+Credits
+=======
+
+I didn't write any of the code that actually applies the watermark.  I snagged
+it from http://code.activestate.com/recipes/362879/ and turned it into a Django
+pluggable application. Props to Shane Hathaway.
+
+  
