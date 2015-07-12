@@ -166,30 +166,43 @@ are:
 Examples
 --------
 
-* ``{{ image_url|watermark:"My Watermark,position=br,opacity=35" }}``
+Looks for a watermark named "My Watermark", place it in the
+bottom-right corner of the target image, using a 35% transparency
+level:
 
-  Looks for a watermark named "My Watermark", place it in the bottom-right
-  corner of the target image, using a 35% transparency level.
+.. code-block:: html+django
 
-* ``{{ image_url|watermark:"Your Watermark,position=tl,opacity=75" }}``
+    {{ image_url|watermark:"My Watermark,position=br,opacity=35" }}
 
-  Looks for a watermark named "Your Watermark", place it in the top-left corner
-  of the target image, using a 75% transparency level.
+Looks for a watermark named "Your Watermark", place it in the top-left
+corner of the target image, using a 75% transparency level:
 
-* ``{{ image_url|watermark:"The Watermark,position=43%x80%,opacity=40" }}``
+.. code-block:: html+django
 
-  Looks for a watermark named "The Watermark", places it at 43% on the x-axis
-  and 80% of the y-axis of the target image, at a transparency level of 40%.
+    {{ image_url|watermark:"Your Watermark,position=tl,opacity=75" }}
 
-* ``{{ image_url|watermark:"The Watermark,position=R,opacity=10,rotation=45" }}``
+Looks for a watermark named "The Watermark", places it at 43% on the
+x-axis and 80% of the y-axis of the target image, at a transparency
+level of 40%:
 
-  Looks for a watermark named "The Watermark", randomly generates a position
-  for it, at a transparency level of 10%, rotated 45 degrees.
+.. code-block:: html+django
 
-* ``{{ image_url|watermark:"w00t,opacity=40,tile=1" }}``
+    {{ image_url|watermark:"The Watermark,position=43%x80%,opacity=40" }}
 
-  Looks for a watermark called "w00t", tiles it across the entire target image,
-  at a transparency level of 40%.
+Looks for a watermark named "The Watermark", randomly generates a
+position for it, at a transparency level of 10%, rotated 45 degrees:
+
+.. code-block:: html+django
+
+    {{ image_url|watermark:"The Watermark,position=R,opacity=10,rotation=45" }}
+
+Looks for a watermark called "w00t", tiles it across the entire target
+image, at a transparency level of 40%:
+
+.. code-block:: html+django
+
+    {{ image_url|watermark:"w00t,opacity=40,tile=1" }}
+
 
 Credits
 -------
