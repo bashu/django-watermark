@@ -1,0 +1,33 @@
+0.1.5-pre1
+----------
+
+- refactored a good deal of the code inside the watermark filter and placed it in utils.py.
+  Now the filter is mostly just an interface to the utils.watermark function.
+- removed the "parameter precedence" with positioning, tiling, and scaling.
+  Now they can all be used at the same time.
+- added several enhancements to the positioning and tiling features in particular
+
+0.1.2-pre1
+----------
+
+- added the ability to randomly position watermarks
+- removed the "top-left" part of positioning--meaning that position=50%x50%
+  actually centers the watermark image instead of centering the top-left corner
+  of the watermark image
+- added watermark rotation
+
+0.1.1-pre1
+----------
+
+- added the ability to conver the watermark image to a transparent
+  greyscale image before applying it to the target image
+
+0.1.0-pre2
+----------
+
+- fixed a typo that broke the filter
+
+0.1.0-pre1
+----------
+
+- initial release
