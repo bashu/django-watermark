@@ -73,21 +73,22 @@ that are necessary for operation.
 Configuration (optional)
 ------------------------
 
-While we're in this section, I might as well mention a settings variable that
-you can override: ``WATERMARKING_QUALITY``.  This should be an integer between
-0 and 100.  The default is 85.
+While we're in this section, I might as well mention a settings
+variable that you can override: ``WATERMARKING_QUALITY``. This should
+be an integer between 0 and 100.  The default is 85.
 
-By default, ``django-watermark`` obscures the original image's file name, as
-the original requirements were to make it impossible to download the
-watermark-less image.  As of version 0.1.6, you can specify
-``WATERMARK_OBSCURE_ORIGINAL = False`` in your ``setings.py`` to make the
-original image file name accessible to the user.
+By default, ``django-watermark`` obscures the original image's file
+name, as the original requirements were to make it impossible to
+download the watermark-less image.  As of version 0.1.6, you can set
+``WATERMARK_OBSCURE_ORIGINAL`` to ``False`` in your ``setings.py`` to
+make the original image file name accessible to the user.
 
-``django-watermark`` also lets you configure how random watermark positioning
-should work.  By default, a when a watermark is to be positioned randomly, only
-one watermarked image will be generated.  If you wish to generate a random
-position for an image's watermark on each request, set
-``WATERMARK_RANDOM_POSITION_ONCE`` to ``False`` in your ``settings.py``.
+``django-watermark`` also lets you configure how random watermark
+positioning should work.  By default, a when a watermark is to be
+positioned randomly, only one watermarked image will be generated.  If
+you wish to generate a random position for an image's watermark on
+each request, set ``WATERMARK_RANDOM_POSITION_ONCE`` to ``False`` in
+your ``settings.py``.
 
 Usage
 -----
