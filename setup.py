@@ -1,24 +1,28 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
+import os
 from setuptools import setup, find_packages
-import watermarker
+
+README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
+
+# allow setup.py to be run from any path
+os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+
+from watermarker import __version__
 
 setup(
     name='django-watermark',
-    version=watermarker.version(),
+    version=__version__,
+    packages=find_packages(exclude=['example']),
+    include_package_data=True,
+    license='BSD License',
     description="Quick and efficient way to apply watermarks to images in Django.",
-    long_description=open('README.rst', 'r').read(),
+    long_description=README,
     keywords='django, watermark, image, photo, logo',
+    url='http://github.com/codekoala/django-watermark/',
     author='Josh VanderLinden',
     author_email='codekoala@gmail.com',
-    url='http://bitbucket.org/codekoala/django-watermark/',
-    license='BSD',
-    package_dir={'watermarker': 'watermarker'},
-    include_package_data=True,
-    packages=find_packages(),
+    maintainer='Basil Shubin',
+    maintainer_email='basil.shubin@gmail.com',
     classifiers=[
-        'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
@@ -28,6 +32,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Artistic Software',
+        'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Multimedia :: Graphics'
     ],

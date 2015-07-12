@@ -1,7 +1,5 @@
+from django.utils.version import get_version
+
 VERSION = (0, 1, 6, 'pre1')
 
-def version():
-    return '%s.%s.%s-%s' % VERSION
-
-def get_version():
-    return 'django-watermark %s' % version()
+__version__ = get_version(VERSION)

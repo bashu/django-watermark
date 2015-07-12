@@ -69,7 +69,6 @@ First of all, you must add this project to your list of ``INSTALLED_APPS`` in
 Run ``./manage.py syncdb``. This creates the tables in your database
 that are necessary for operation.
 
-
 Configuration (optional)
 ------------------------
 
