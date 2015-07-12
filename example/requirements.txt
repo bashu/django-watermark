@@ -1,0 +1,4 @@
+django
+django-appconf
+pillow
+south
