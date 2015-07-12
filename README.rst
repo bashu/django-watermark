@@ -69,6 +69,13 @@ First of all, you must add this project to your list of ``INSTALLED_APPS`` in
 Run ``./manage.py syncdb``. This creates the tables in your database
 that are necessary for operation.
 
+Please see ``example`` application. This application is used to manually
+test the functionalities of this package. This also serves as a good
+example.
+
+You need Django 1.4 or above to run that. It might run on older
+versions but that is not tested.
+
 Configuration (optional)
 ------------------------
 
