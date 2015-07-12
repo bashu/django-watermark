@@ -57,19 +57,13 @@ Installation
 Either clone this repository into your project, or install with ``pip install django-watermark``
 
 First of all, you must add this project to your list of ``INSTALLED_APPS`` in
-``settings.py``::
+``settings.py`` :
 
 .. code-block:: python
   
     INSTALLED_APPS = (
-        'django.contrib.admin',
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
-        'django.contrib.sessions',
-        'django.contrib.sites',
         ...
         'watermarker',
-        ...
     )
 
 Run ``./manage.py syncdb``. This creates the tables in your database
