@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 """
 Utilities for applying a watermark to an image using PIL.
 
-Original Source: http://code.activestate.com/recipes/362879/
+Stolen from http://code.activestate.com/recipes/362879/
+
 """
 
 from PIL import Image, ImageEnhance

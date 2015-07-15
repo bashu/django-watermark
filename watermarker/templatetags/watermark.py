@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from datetime import datetime
 from hashlib import sha1
 from PIL import Image
+
 import errno
 import logging
 import os
