@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
 """
 Utilities for applying a watermark to an image using PIL.
 
-Original Source: http://code.activestate.com/recipes/362879/
+Stolen from http://code.activestate.com/recipes/362879/
+
 """
 
-import Image, ImageEnhance
+from PIL import Image, ImageEnhance
 import random
 import traceback
 
@@ -173,7 +175,7 @@ def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, grey
     if type(scale) != tuple:
         scale = determine_scale(scale, img, mark)
 
-    mark = mark.resize(scale)
+    mark = mark.resize(scale, resample=Image.ANTIALIAS)
 
     if greyscale and mark.mode != 'LA':
         mark = mark.convert('LA')
