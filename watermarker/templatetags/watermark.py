@@ -97,7 +97,7 @@ class Watermarker(object):
         # make sure URL is a string
         url = str(url)
 
-        basedir = '%s/watermarked' % os.path.dirname(url)
+        basedir = '%s/watermarked/' % os.path.dirname(url)
         base, ext = os.path.splitext(os.path.basename(url))
 
         # open the target image file along with the watermark image
