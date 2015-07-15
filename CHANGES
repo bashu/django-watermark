@@ -1,3 +1,13 @@
+WIP
+---
+
+- makes it easy for browsers like Mozilla and Opera get the correct url of images.
+- resize watermark before calculating its position
+- apply anti-aliasing on watermark
+- django >=1.4 timezone support
+- python 3 compatibility
+- pillow compatibility
+
 0.1.5-pre1
 ----------
 
