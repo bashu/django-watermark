@@ -1,42 +1,41 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
-from hashlib import sha1
-from PIL import Image
-
+import os
 import errno
 import logging
-import os
 import traceback
+import hashlib
+
+from PIL import Image
+from datetime import datetime
 
 try:
     from urllib.parse import unquote, url2pathname
 except ImportError:
     from urllib import unquote, url2pathname
 
-from django.utils import timezone
-from django.conf import settings
 from django import template
-from django.utils import timezone
 from django.utils.encoding import smart_str
+from django.utils.timezone import make_aware, get_default_timezone
+
 from watermarker import utils
+from watermarker.conf import settings
 from watermarker.models import Watermark
+
+QUALITY = settings.WATERMARK_QUALITY
+OBSCURE_ORIGINAL = settings.WATERMARK_OBSCURE_ORIGINAL
+RANDOM_POSITION_ONCE = settings.WATERMARK_RANDOM_POSITION_ONCE
 
 register = template.Library()
 
-# determine the quality of the image after the watermark is applied
-QUALITY = getattr(settings, 'WATERMARKING_QUALITY', 85)
-OBSCURE = getattr(settings, 'WATERMARK_OBSCURE_ORIGINAL', True)
-RANDOM_POS_ONCE = getattr(settings, 'WATERMARK_RANDOM_POSITION_ONCE', True)
-
-log = logging.getLogger('watermarker')
+logger = logging.getLogger('watermarker')
 
 
 class Watermarker(object):
 
-    def __call__(self, url, name, position=None, opacity=0.5, tile=False,
-                 scale=1.0, greyscale=False, rotation=0, obscure=OBSCURE,
-                 quality=QUALITY, random_position_once=RANDOM_POS_ONCE):
+    def __call__(self, url, name, position=None, opacity=0.5,
+                 tile=False, scale=1.0, greyscale=False, rotation=0,
+                 obscure=OBSCURE_ORIGINAL, quality=QUALITY, random_position_once=RANDOM_POSITION_ONCE):
         """
         Creates a watermarked copy of an image.
 
@@ -96,24 +95,27 @@ class Watermarker(object):
           image's filename.  Defaults to ``True``.
         * ``quality``: the quality of the resulting watermarked image.  Default
           is 85.
+
         """
         # look for the specified watermark by name.  If it's not there, go no
         # further
         try:
             watermark = Watermark.objects.get(name=name, is_active=True)
         except Watermark.DoesNotExist:
-            log.error('Watermark "%s" does not exist... Bailing out.' % name)
+            logger.error('Watermark "%s" does not exist... Bailing out.' % name)
             return url
 
         # make sure URL is a string
         url = smart_str(url)
 
         basedir = '%s/watermarked/' % os.path.dirname(url)
-        base, ext = os.path.splitext(os.path.basename(url))
+        original_basename, ext = os.path.splitext(os.path.basename(url))
+
+        # file status for modification date and size
+        fstat = os.stat(self._get_filesystem_path(url))
 
         # open the target image file along with the watermark image
-        target_path = self.get_url_path(url)
-        target = Image.open(target_path)
+        target = Image.open(self._get_filesystem_path(url))
         mark = Image.open(watermark.image.path)
 
         # determine the actual value that the parameters provided will render
@@ -123,17 +125,13 @@ class Watermarker(object):
         rotation = utils.determine_rotation(rotation, mark)
         pos = utils.determine_position(position, target, mark)
 
-        # file status for modification date and size
-        fstat = os.stat(target_path)
-
         # see if we need to create only one randomly positioned watermarked
         # image
-        if not random_position or \
-            (not random_position_once and random_position):
-            log.debug('Generating random position for watermark each time')
+        if not random_position or (not random_position_once and random_position):
+            logger.debug('Generating random position for watermark each time')
             position = pos
         else:
-            log.debug('Random positioning watermark once')
+            logger.debug('Random positioning watermark once')
 
         params = {
             'position':    position,
@@ -142,66 +140,66 @@ class Watermarker(object):
             'tile':        tile,
             'greyscale':   greyscale,
             'rotation':    rotation,
-            'base':        base,
+            'original_basename':    original_basename,
             'ext':         ext,
             'quality':     quality,
             'watermark':   watermark.id,
-            'opacity_int': int(opacity * 100),
             'left':        pos[0],
             'top':         pos[1],
-            'st_mtime':    fstat.st_mtime,
-            'st_size':     fstat.st_size
+            'fstat':       fstat,
         }
-        log.debug('Params: %s' % params)
+        logger.debug('Params: %s' % params)
 
-        wm_name = self.watermark_name(mark, **params)
-        wm_url = self.watermark_path(basedir, base, ext, wm_name, obscure)
-        wm_path = self.get_url_path(wm_url)
-        log.debug('Watermark name: %s; URL: %s; Path: %s' % (
-           wm_name, wm_url, wm_path
+        fname = self.generate_filename(mark, **params)
+        url_path = self.get_url_path(basedir, original_basename, ext, fname, obscure)
+        fpath = self._get_filesystem_path(url_path)
+
+        logger.debug('Watermark name: %s; URL: %s; Path: %s' % (
+            fname, url_path, fpath,
         ))
 
-        # see if the image already exists on the filesystem.  If it does, use
-        # it.
-        if os.access(wm_path, os.R_OK):
-            # see if the Watermark object was modified since the file was
-            # created
-            modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
+        # see if the image already exists on the filesystem. If it does, use it.
+        if os.access(fpath, os.R_OK):
+            # see if the ``Watermark`` object was modified since the
+            # file was created
+            modified = make_aware(
+                datetime.fromtimestamp(os.path.getmtime(fpath)), get_default_timezone())
 
             # only return the old file if things appear to be the same
-            if timezone.make_aware(modified, timezone.get_default_timezone()) >= watermark.date_updated:
-                log.info('Watermark exists and has not changed.  Bailing out.')
-                return wm_url
+            if modified >= watermark.date_updated:
+                logger.info('Watermark exists and has not changed. Bailing out.')
+                return url_path
 
         # make sure the position is in our params for the watermark
         params['position'] = pos
 
-        self.create_watermark(target, mark, wm_path, **params)
+        self.create_watermark(target, mark, fpath, **params)
 
         # send back the URL to the new, watermarked image
-        return wm_url
+        return url_path
 
+    def _get_filesystem_path(self, url_path, basedir=settings.MEDIA_ROOT):
+        """Makes a filesystem path from the specified URL path"""
 
-    def get_url_path(self, url, root=settings.MEDIA_ROOT,
-                     url_root=settings.MEDIA_URL):
-        """
-        Makes a filesystem path from the specified URL.
-        """
-        if url.startswith(url_root):
-            url = url[len(url_root):] # strip media root url
+        if url_path.startswith(settings.MEDIA_URL):
+            url_path = url_path[len(settings.MEDIA_URL):]  # strip media root url
 
-        return os.path.normpath(os.path.join(root, url2pathname(url)))
+        return os.path.normpath(os.path.join(basedir, url2pathname(url_path)))
 
+    def generate_filename(self, mark, **kwargs):
+        """Comes up with a good filename for the watermarked image"""
 
-    def watermark_name(self, mark, **kwargs):
-        """
-        Comes up with a good filename for the watermarked image.
-        """
+        kwargs = kwargs.copy()
+
+        kwargs['opacity'] = int(kwargs['opacity'] * 100)
+        kwargs['st_mtime'] = kwargs['fstat'].st_mtime
+        kwargs['st_size'] = kwargs['fstat'].st_size
+        
         params = [
-            '%(base)s',
+            '%(original_basename)s',
             'wm',
             'w%(watermark)i',
-            'o%(opacity_int)i',
+            'o%(opacity)i',
             'gs%(greyscale)i',
             'r%(rotation)i',
             'fm%(st_mtime)i',
@@ -217,99 +215,92 @@ class Watermarker(object):
             params.append('_tiled')
 
         # make thumbnail filename
-        name = '%s%s' % ('_'.join(params), kwargs['ext'])
-        return name % kwargs
+        filename = '%s%s' % ('_'.join(params), kwargs['ext'])
 
+        return filename % kwargs
 
-    def watermark_path(self, basedir, base, ext, wm_name, obscure=True):
-        """
-        Determines an appropriate watermark path.
-        """
+    def get_url_path(self, basedir, original_basename, ext, name, obscure=True):
+        """Determines an appropriate watermark path"""
 
-        hash = sha1(smart_str(wm_name)).hexdigest()
+        hash = hashlib.sha1(smart_str(name)).hexdigest()
 
         # figure out where the watermark would be saved on the filesystem
-        if obscure:
-            log.debug('Obscuring original image name: %s => %s' % (wm_name, hash))
-            new_file = os.path.join(basedir, hash + ext)
+        if obscure is True:
+            logger.debug('Obscuring original image name: %s => %s' % (name, hash))
+            url_path = os.path.join(basedir, hash + ext)
         else:
-            log.debug('Not obscuring original image name.')
-            new_file = os.path.join(basedir, hash, base + ext)
+            logger.debug('Not obscuring original image name.')
+            url_path = os.path.join(basedir, hash, original_basename + ext)
 
         # make sure the destination directory exists
         try:
-            root = self.get_url_path(new_file)
-            os.makedirs(os.path.dirname(root))
-        except OSError as exc:
-            if exc.errno == errno.EEXIST:
-                # not to worry, directory exists
-                pass
+            fpath = self._get_filesystem_path(url_path)
+            os.makedirs(os.path.dirname(fpath))
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                pass  # not to worry, directory exists
             else:
-                log.error('Error creating path: %s' % traceback.format_exc())
+                logger.error('Error creating path: %s' % traceback.format_exc())
                 raise
         else:
-            log.debug('Created directory: %s' % root)
+            logger.debug('Created directory: %s' % os.path.dirname(fpath))
 
-        return new_file
+        return url_path
 
-
-    def create_watermark(self, target, mark, path, quality=QUALITY, **kwargs):
-        """
-        Create the watermarked image on the filesystem.
-        """
+    def create_watermark(self, target, mark, fpath, quality=QUALITY, **kwargs):
+        """Create the watermarked image on the filesystem"""
 
         im = utils.watermark(target, mark, **kwargs)
-        im.save(path, quality=quality)
-
+        im.save(fpath, quality=quality)
         return im
 
 
+@register.filter
 def watermark(url, args=''):
     """
     Returns the URL to a watermarked copy of the image specified.
-    """
 
+    """
     # initialize some variables
     args = args.split(',')
-    name = args.pop(0)
-    opacity = 0.5
-    tile = False
-    scale = 1.0
-    greyscale = False
-    rotation = 0
-    position = None
-    obscure = OBSCURE
-    quality = QUALITY
-    random_position_once = RANDOM_POS_ONCE
 
-    url = unquote(url)
+    params = dict(
+        name=args.pop(0),
+        opacity=0.5,
+        tile=False,
+        scale=1.0,
+        greyscale=False,
+        rotation=0,
+        position=None,
+        quality=QUALITY,
+        obscure=OBSCURE_ORIGINAL,
+        random_position_once=RANDOM_POSITION_ONCE,
+    )
+
+    params['url'] = unquote(url)
 
     # iterate over all parameters to see what we need to do
     for arg in args:
         key, value = arg.split('=')
-        key = key.strip()
-        value = value.strip()
+        key, value = key.strip(), value.strip()
         if key == 'position':
-            position = value
+            params['position'] = value
         elif key == 'opacity':
-            opacity = utils._percent(value)
+            params['opacity'] = utils._percent(value)
         elif key == 'tile':
-            tile = bool(int(value))
+            params['tile'] = bool(int(value))
         elif key == 'scale':
-            scale = value
+            params['scale'] = value
         elif key == 'greyscale':
-            greyscale = bool(int(value))
+            params['greyscale'] = bool(int(value))
         elif key == 'rotation':
-            rotation = value
-        elif key == 'obscure':
-            obscure = bool(int(value))
+            params['rotation'] = value
         elif key == 'quality':
-            quality = int(value)
+            params['quality'] = int(value)
+        elif key == 'obscure':
+            params['obscure'] = bool(int(value))
         elif key == 'random_position_once':
-            random_position_once = bool(int(value))
+            params['random_position_once'] = bool(int(value))
 
-    mark = Watermarker()
-    return mark(url, name, position, opacity, tile, scale, greyscale,
-                  rotation, obscure, quality, random_position_once)
+    return Watermarker()(**params)
 
-register.filter(watermark)

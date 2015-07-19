@@ -22,6 +22,9 @@ setup(
     author_email='codekoala@gmail.com',
     maintainer='Basil Shubin',
     maintainer_email='basil.shubin@gmail.com',
+    install_requires=[
+        'django-appconf',
+    ],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
