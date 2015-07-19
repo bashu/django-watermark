@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.conf import settings
 from django import template
 from django.utils import timezone
+from django.utils.encoding import smart_str
 from watermarker import utils
 from watermarker.models import Watermark
 
@@ -96,7 +97,6 @@ class Watermarker(object):
         * ``quality``: the quality of the resulting watermarked image.  Default
           is 85.
         """
-
         # look for the specified watermark by name.  If it's not there, go no
         # further
         try:
@@ -106,7 +106,7 @@ class Watermarker(object):
             return url
 
         # make sure URL is a string
-        url = str(url)
+        url = smart_str(url)
 
         basedir = '%s/watermarked/' % os.path.dirname(url)
         base, ext = os.path.splitext(os.path.basename(url))
@@ -226,17 +226,15 @@ class Watermarker(object):
         Determines an appropriate watermark path.
         """
 
+        hash = sha1(smart_str(wm_name)).hexdigest()
+
         # figure out where the watermark would be saved on the filesystem
         if obscure:
-            try:
-                hash = sha1(wm_name).hexdigest()
-            except TypeError:
-                hash = sha1(wm_name.encode('utf-8')).hexdigest()
             log.debug('Obscuring original image name: %s => %s' % (wm_name, hash))
             new_file = os.path.join(basedir, hash + ext)
         else:
             log.debug('Not obscuring original image name.')
-            new_file = os.path.join(basedir, base + ext)
+            new_file = os.path.join(basedir, hash, base + ext)
 
         # make sure the destination directory exists
         try:
