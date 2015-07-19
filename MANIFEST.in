@@ -1,3 +1,4 @@
 CHANGES
 LICENSE
 README.rst
+recursive-include watermarker/locale *
