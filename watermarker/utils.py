@@ -20,11 +20,13 @@ def _percent(var):
     """
     return _val(var, True)
 
+
 def _int(var):
     """
     Just a simple interface to the _val function with a more meaningful name.
     """
     return _val(var)
+
 
 def _val(var, is_percent=False):
     """
@@ -33,6 +35,7 @@ def _val(var, is_percent=False):
     will be sought after and then turned into a floating point number between
     0 and 1.  If the value is supposed to be an integer, the variable is cast
     into an integer.
+
     """
     try:
         if is_percent:
@@ -42,6 +45,7 @@ def _val(var, is_percent=False):
     except ValueError:
         raise ValueError('invalid watermark parameter: ' + var)
     return var
+
 
 def reduce_opacity(img, opacity):
     """
@@ -60,13 +64,14 @@ def reduce_opacity(img, opacity):
 
     return img
 
+
 def determine_scale(scale, img, mark):
     """
     Scales an image using a specified ratio or 'F'.  If `scale` is 'F', the
     image is scaled to be as big as possible to fit in `img` without falling off
     the edges.  Returns the scaled `mark`.
-    """
 
+    """
     if scale:
         try:
             scale = float(scale)
@@ -91,17 +96,18 @@ def determine_scale(scale, img, mark):
     else:
         return mark.size
 
+
 def determine_rotation(rotation, mark):
     """
     Determines the number of degrees to rotate the watermark image.
     """
-
     if isinstance(rotation, basestring) and rotation.lower() == 'r':
         rotation = random.randint(0, 359)
     else:
         rotation = _int(rotation)
 
     return rotation
+
 
 def determine_position(position, img, mark):
     """
@@ -118,8 +124,8 @@ def determine_position(position, img, mark):
         XxY%: absolute positioning on the X axis and relative positioning on the
               Y axis
         XxY: absolute positioning on both the X and Y axes
-    """
 
+    """
     left = top = 0
 
     max_left = max(img.size[0] - mark.size[0], 0)
@@ -173,9 +179,12 @@ def determine_position(position, img, mark):
 
     return int(left), int(top)
 
-def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, greyscale=False, rotation=0, return_name=False, **kwargs):
+
+def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False,
+              greyscale=False, rotation=0, return_name=False, **kwargs):
     """
     Adds a watermark to an image.
+
     """
     if opacity < 1:
         mark = reduce_opacity(mark, opacity)
@@ -226,30 +235,3 @@ def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False, grey
 
     # composite the watermark with the layer
     return Image.composite(layer, img, layer)
-
-def test():
-    im = Image.open('test.png')
-    mark = Image.open('overlay.png')
-    watermark(im, mark,
-                tile=True,
-                opacity=0.5,
-                rotation=30).save('test1.png')
-
-    watermark(im, mark,
-                scale='F').save('test2.png')
-
-    watermark(im, mark,
-                position=(100, 100),
-                opacity=0.5,
-                greyscale=True,
-                rotation=-45).save('test3.png')
-
-    watermark(im, mark,
-                position='C',
-                tile=False,
-                opacity=0.2,
-                scale=2,
-                rotation=30).save('test4.png')
-
-if __name__ == '__main__':
-    test()
