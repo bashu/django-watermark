@@ -8,11 +8,13 @@ import errno
 import logging
 import os
 import traceback
-try:
-    from urllib.parse import unquote
-except ImportError:
-    from urllib import unquote
 
+try:
+    from urllib.parse import unquote, url2pathname
+except ImportError:
+    from urllib import unquote, url2pathname
+
+from django.utils import timezone
 from django.conf import settings
 from django import template
 from django.utils import timezone
@@ -165,11 +167,9 @@ class Watermarker(object):
             # see if the Watermark object was modified since the file was
             # created
             modified = datetime.fromtimestamp(os.path.getmtime(wm_path))
-            # Django 1.4+ timezone support
-            modified = timezone.make_aware(modified, timezone.get_default_timezone())
 
             # only return the old file if things appear to be the same
-            if modified >= watermark.date_updated:
+            if timezone.make_aware(modified, timezone.get_default_timezone()) >= watermark.date_updated:
                 log.info('Watermark exists and has not changed.  Bailing out.')
                 return wm_url
 
@@ -190,7 +190,7 @@ class Watermarker(object):
         if url.startswith(url_root):
             url = url[len(url_root):] # strip media root url
 
-        return os.path.normpath(os.path.join(root, url))
+        return os.path.normpath(os.path.join(root, url2pathname(url)))
 
 
     def watermark_name(self, mark, **kwargs):
