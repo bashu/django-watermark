@@ -18,6 +18,6 @@ class WatermarkSettings(AppConf):
 
     def configure_quality(self, value):
         if getattr(settings, 'WATERMARKING_QUALITY', None):
-            warnings.warn("WATERMARKING_QUALITY is deprecated, use WATERMAR_QUALITY", DeprecationWarning)
+            warnings.warn("WATERMARKING_QUALITY is deprecated, use WATERMARK_QUALITY", DeprecationWarning)
 
         return value
