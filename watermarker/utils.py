@@ -5,10 +5,14 @@ Utilities for applying a watermark to an image using PIL.
 Stolen from http://code.activestate.com/recipes/362879/
 
 """
+import sys
+import random
 
 from PIL import Image, ImageEnhance
-import random
-import traceback
+
+if sys.version_info[0] == 3:
+    basestring = (str, bytes)
+
 
 def _percent(var):
     """
@@ -69,7 +73,7 @@ def determine_scale(scale, img, mark):
         except (ValueError, TypeError):
             pass
 
-        if type(scale) in (str, unicode) and scale.lower() == 'f':
+        if isinstance(scale, basestring) and scale.lower() == 'f':
             # scale, but preserve the aspect ratio
             scale = min(
                         float(img.size[0]) / mark.size[0],
@@ -92,8 +96,7 @@ def determine_rotation(rotation, mark):
     Determines the number of degrees to rotate the watermark image.
     """
 
-    if (isinstance(rotation, str) or isinstance(rotation, unicode)) \
-        and rotation.lower() == 'r':
+    if isinstance(rotation, basestring) and rotation.lower() == 'r':
         rotation = random.randint(0, 359)
     else:
         rotation = _int(rotation)
@@ -120,24 +123,27 @@ def determine_position(position, img, mark):
     max_left = max(img.size[0] - mark.size[0], 0)
     max_top = max(img.size[1] - mark.size[1], 0)
 
+    #Added a 10px margin from corners to apply watermark.
+    margin = 10
+
     if not position:
         position = 'r'
 
     if isinstance(position, tuple):
         left, top = position
-    elif isinstance(position, str) or isinstance(position, unicode):
+    elif isinstance(position, basestring):
         position = position.lower()
 
         # corner positioning
         if position in ['tl', 'tr', 'br', 'bl']:
             if 't' in position:
-                top = 0
+                top = margin
             elif 'b' in position:
-                top = max_top
+                top = max_top - margin
             if 'l' in position:
-                left = 0
+                left = margin
             elif 'r' in position:
-                left = max_left
+                left = max_left - margin
 
         # center positioning
         elif position == 'c':
