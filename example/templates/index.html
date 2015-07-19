@@ -1,0 +1,9 @@
+{% load static watermark %}
+<html>
+  <head></head>
+  <body>
+    {% with "/media/test.jpg" as url_path %}
+      <img src="{{ url_path|watermark:"default,scale=0.5,position=br,opacity=45" }}" />
+    {% endwith %}
+  </body>
+</html>

@@ -24,6 +24,8 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
+SERVE_MEDIA = True
+
 ALLOWED_HOSTS = []
 
 TEMPLATE_DIRS = (
@@ -51,7 +53,17 @@ if django.VERSION < (1, 7):
     INSTALLED_APPS += [
         'south',
     ]
-    
+
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
+
 ROOT_URLCONF = 'example.urls'
 
 SITE_ID = 1
@@ -82,4 +94,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
+# Absolute filesystem path to the directory that will hold user-uploaded files.
+MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media')
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash.
+MEDIA_URL = '/media/'
+
+# Absolute path to the directory static files should be collected to.
+STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
+
 STATIC_URL = '/static/'
+
+
+## Watermark settings
+
+WATERMARK_QUALITY = 95
+WATERMARK_OBSCURE_ORIGINAL = True
+WATERMARK_RANDOM_POSITION_ONCE = False
