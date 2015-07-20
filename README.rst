@@ -91,7 +91,7 @@ Configuration (optional)
 ------------------------
 
 While we're in this section, I might as well mention a settings
-variable that you can override: ``WATERMARKING_QUALITY``. This should
+variable that you can override: ``WATERMARK_QUALITY``. This should
 be an integer between 0 and 100.  The default is 85.
 
 By default, ``django-watermark`` obscures the original image's file
