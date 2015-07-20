@@ -111,9 +111,6 @@ class Watermarker(object):
         basedir = '%s/watermarked/' % os.path.dirname(url)
         original_basename, ext = os.path.splitext(os.path.basename(url))
 
-        # file status for modification date and size
-        fstat = os.stat(self._get_filesystem_path(url))
-
         # open the target image file along with the watermark image
         target = Image.open(self._get_filesystem_path(url))
         mark = Image.open(watermark.image.path)
@@ -146,7 +143,7 @@ class Watermarker(object):
             'watermark':   watermark.id,
             'left':        pos[0],
             'top':         pos[1],
-            'fstat':       fstat,
+            # 'fstat':       os.stat(self._get_filesystem_path(url)),
         }
         logger.debug('Params: %s' % params)
 
@@ -192,8 +189,8 @@ class Watermarker(object):
         kwargs = kwargs.copy()
 
         kwargs['opacity'] = int(kwargs['opacity'] * 100)
-        kwargs['st_mtime'] = kwargs['fstat'].st_mtime
-        kwargs['st_size'] = kwargs['fstat'].st_size
+        # kwargs['st_mtime'] = kwargs['fstat'].st_mtime
+        # kwargs['st_size'] = kwargs['fstat'].st_size
         
         params = [
             '%(original_basename)s',
@@ -202,8 +199,8 @@ class Watermarker(object):
             'o%(opacity)i',
             'gs%(greyscale)i',
             'r%(rotation)i',
-            'fm%(st_mtime)i',
-            'fz%(st_size)i',
+            # 'fm%(st_mtime)i',
+            # 'fz%(st_size)i',
             'p%(position)s',
         ]
 

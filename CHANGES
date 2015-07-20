@@ -2,7 +2,6 @@ WIP
 ---
 
 - makes it easy for browsers like Mozilla and Opera get the correct url of images.
-- added modification time and size to obscure filename
 - added a 10px margin from corners to apply watermark
 - resize watermark before calculating its position
 - apply anti-aliasing on watermark
