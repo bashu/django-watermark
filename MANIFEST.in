@@ -1,3 +1,5 @@
-include README.rst LICENSE requirements.txt
-recursive-include watermarker *.*
-recursive-exclude watermarker *.pyc .*.swp
+include CHANGES
+include LICENSE
+include README.rst
+recursive-exclude watermarker/tests *
+recursive-include watermarker/locale *

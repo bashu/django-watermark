@@ -1,0 +1,13 @@
+[
+  {
+    "pk": 1, 
+    "model": "watermarker.watermark", 
+    "fields": {
+      "date_updated": "2015-07-19T10:20:18.108Z", 
+      "date_created": "2015-07-19T10:06:45.668Z", 
+      "image": "watermarks/sample.png", 
+      "is_active": true, 
+      "name": "sample"
+    }
+  }
+]

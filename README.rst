@@ -1,20 +1,35 @@
-This project provides a simple way for you to apply custom watermarks to images
-on your Django-powered website.
+django-watermark
+================
+
+This project provides a simple way for you to apply custom watermarks
+to images on your Django-powered website.
+
+Authored by `Josh VanderLinden <http://www.codekoala.com//>`_, and some great
+`contributors <https://github.com/codekoala/django-watermark/contributors>`_.
+
+.. image:: https://img.shields.io/pypi/v/django-watermark.svg
+    :target: https://pypi.python.org/pypi/django-watermark/
+
+.. image:: https://img.shields.io/pypi/dm/django-watermark.svg
+    :target: https://pypi.python.org/pypi/django-watermark/
+
+.. image:: https://img.shields.io/github/license/codekoala/django-watermark.svg
+    :target: https://pypi.python.org/pypi/django-watermark/
 
 Features
-========
+--------
 
 * Opacity: the filter allows you to specify the transparency level for your
   watermark image
 * Watermark positioning: you have several options for positioning watermarks on
   your images
 
-    * Absolute: you can specify exact pixel locations for your watermark
-    * Relative: you can use percentages to place your watermark
-    * Corners: you can position your watermark in the corners of your images
-    * Random: you can tell the filter to randomly generate a position for your
-      watermark
-    * Center: you can place watermarks in the center of the target image
+  * Absolute: you can specify exact pixel locations for your watermark
+  * Relative: you can use percentages to place your watermark
+  * Corners: you can position your watermark in the corners of your images
+  * Random: you can tell the filter to randomly generate a position for your
+    watermark
+  * Center: you can place watermarks in the center of the target image
 
 * Scaling: the watermark can be scaled to cover your images or specify a
   scaling factor to use
@@ -24,112 +39,82 @@ Features
 * Rotation: you can rotate your watermark a certain number of degrees or have
   the rotation be random.
 
-Credits
-=======
-
-I didn't write any of the code that actually applies the watermark.  I snagged
-it from http://code.activestate.com/recipes/362879/ and turned it into a Django
-pluggable application.  Props to Shane Hathaway.
-
 Requirements
-============
+------------
 
-``django-watermark`` requires a modern version of the Django framework.  By
-modern I simply mean a version with the ``newforms-admin`` functionality.  If
-you're running on Django 1.0 or later, you're good.
+``django-watermark`` requires a modern version of the Django
+framework.  By modern I simply mean a version with the
+``newforms-admin`` functionality.  If you're running on Django 1.0 or
+later, you're good.
 
-``django-watermark`` also relies upon the built-in ``django.contrib.admin`` and
-the [http://www.pythonware.com/products/pil/ Python Imaging Library] (PIL).  I
-built it using PIL 1.1.6, but it may work with previous versions.
+``django-watermark`` also relies upon the built-in ``django.contrib.admin``
+and the `Python Imaging Library <http://www.pythonware.com/products/pil/>`_ (PIL).
+I built it using PIL 1.1.6, but it may work with previous versions.
 
 Installation
-============
+------------
 
-Download ``django-watermark`` using *one* of the following methods:
-
-easy_install/pip
-----------------
-
-You can download the package from the `CheeseShop
-<http://pypi.python.org/pypi/django-watermark/>`_ or use one of these commands::
-
-    easy_install django-watermark
-    pip install -U django-watermark
-
-to download and install ``django-watermark``.
-
-Package Download
-----------------
-
-Download the latest ``.tar.gz``, ``.tar.bz2``, or ``.zip`` file from the
-downloads section and extract it somewhere you'll remember.  Use ``python
-setup.py install`` to install it.
-
-Clone From Version Control
---------------------------
-
-You can get the latest copy of the source from any of these official mirrors::
-
-    hg clone http://bitbucket.org/codekoala/django-watermark
-    git clone http://github.com/codekoala/django-watermark.git
-    hg clone http://django-watermark.googlecode.com/hg django-watermark
-
-Verifying Installation
-----------------------
-
-The easiest way to ensure that you have successfully installed Pendulum is to
-execute a command such as::
-
-    python -c "import watermarker; print watermarker.get_version()"
-
-If that displays the version of ``django-watermark`` that you tried to install,
-you're good to roll.  If you see something other than that, you probably need
-to check your ``PYTHONPATH`` environment variable.
-
-Configuration
-=============
+Either clone this repository into your project, or install with ``pip install django-watermark``
 
 First of all, you must add this project to your list of ``INSTALLED_APPS`` in
-``settings.py``::
+``settings.py`` :
 
+.. code-block:: python
+  
     INSTALLED_APPS = (
-        'django.contrib.admin',
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
-        'django.contrib.sessions',
-        'django.contrib.sites',
         ...
         'watermarker',
-        ...
     )
 
-Run ``manage.py syncdb``.  This creates the tables in your database that are
-necessary for operation.
+Run ``./manage.py syncdb``. This creates the tables in your database
+that are necessary for operation.
 
-While we're in this section, I might as well mention a settings variable that
-you can override: ``WATERMARKING_QUALITY``.  This should be an integer between
-0 and 100.  The default is 85.
+Please see ``example`` application. This application is used to manually
+test the functionalities of this package. This also serves as a good
+example.
 
-By default, ``django-watermark`` obscures the original image's file name, as
-the original requirements were to make it impossible to download the
-watermark-less image.  As of version 0.1.6, you can specify
-``WATERMARK_OBSCURE_ORIGINAL = False`` in your ``setings.py`` to make the
-original image file name accessible to the user.
+You need Django 1.4 or above to run that. It might run on older
+versions but that is not tested.
 
-``django-watermark`` also lets you configure how random watermark positioning
-should work.  By default, a when a watermark is to be positioned randomly, only
-one watermarked image will be generated.  If you wish to generate a random
-position for an image's watermark on each request, set
-``WATERMARK_RANDOM_POSITION_ONCE`` to ``False`` in your ``settings.py``.
+Upgrading to 0.1.7
+~~~~~~~~~~~~~~~~~~
+
+Upgrading to 0.1.7 is likely to cause problems trying to apply a
+migration when the tables already exist. In this case a fake migration
+needs to be applied:
+
+.. code-block:: shell
+
+    ./manage.py migrate watermarker 0001 --fake
+
+Configuration (optional)
+------------------------
+
+While we're in this section, I might as well mention a settings
+variable that you can override: ``WATERMARK_QUALITY``. This should
+be an integer between 0 and 100.  The default is 85.
+
+By default, ``django-watermark`` obscures the original image's file
+name, as the original requirements were to make it impossible to
+download the watermark-less image.  As of version 0.1.6, you can set
+``WATERMARK_OBSCURE_ORIGINAL`` to ``False`` in your ``setings.py`` to
+make the original image file name accessible to the user.
+
+``django-watermark`` also lets you configure how random watermark
+positioning should work.  By default, a when a watermark is to be
+positioned randomly, only one watermarked image will be generated.  If
+you wish to generate a random position for an image's watermark on
+each request, set ``WATERMARK_RANDOM_POSITION_ONCE`` to ``False`` in
+your ``settings.py``.
 
 Usage
-=====
+-----
 
 As mentioned above, you have several options when using ``django-watermark``.
 The first thing you must do is load the filter for the template in which you
 wish to apply watermarks to your images.
 
-::
+.. code-block:: html+django
 
     {% load watermark %}
 
@@ -196,7 +181,7 @@ are:
   first request).
 
 Examples
-========
+~~~~~~~~
 
 * ``{{ image_url|watermark:"My Watermark,position=br,opacity=35" }}``
 
@@ -222,3 +207,15 @@ Examples
 
   Looks for a watermark called "w00t", tiles it across the entire target image,
   at a transparency level of 40%.
+
+Credits
+-------
+
+I didn't write any of the code that actually applies the watermark.  I snagged
+it from http://code.activestate.com/recipes/362879/ and turned it into a Django
+pluggable application. Props to Shane Hathaway.
+
+License
+-------
+
+``django-watermark`` is released under the BSD license.

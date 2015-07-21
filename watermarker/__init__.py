@@ -1,7 +1,3 @@
-VERSION = (0, 1, 6, 'pre1')
+VERSION = (0, 1, 7)
 
-def version():
-    return '%s.%s.%s-%s' % VERSION
-
-def get_version():
-    return 'django-watermark %s' % version()
+__version__ = '.'.join([str(n) for n in VERSION])

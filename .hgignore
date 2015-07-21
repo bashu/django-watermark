@@ -1,6 +1,0 @@
-syntax: glob
-*.pyc
-*.swp
-*.egg*
-build
-dist
