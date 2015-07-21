@@ -23,7 +23,9 @@ setup(
     maintainer='Basil Shubin',
     maintainer_email='basil.shubin@gmail.com',
     install_requires=[
+        'django>=1.4',
         'django-appconf',
+        'pillow',
     ],
     classifiers=[
         'Environment :: Web Environment',
