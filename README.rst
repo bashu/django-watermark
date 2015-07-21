@@ -42,14 +42,9 @@ Features
 Requirements
 ------------
 
-``django-watermark`` requires a modern version of the Django
-framework.  By modern I simply mean a version with the
-``newforms-admin`` functionality.  If you're running on Django 1.0 or
-later, you're good.
-
 ``django-watermark`` also relies upon the built-in ``django.contrib.admin``
 and the `Python Imaging Library <http://python-pillow.github.io/>`_.
-It was tested with latest Pillow, PIL 1.1.7 is supported but not recommended.
+It was tested with latest Pillow, `PIL <http://www.pythonware.com/products/pil/>`_ 1.1.7 is supported but not recommended.
 
 Installation
 ------------
