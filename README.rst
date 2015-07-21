@@ -48,8 +48,8 @@ framework.  By modern I simply mean a version with the
 later, you're good.
 
 ``django-watermark`` also relies upon the built-in ``django.contrib.admin``
-and the `Python Imaging Library <http://www.pythonware.com/products/pil/>`_ (PIL).
-I built it using PIL 1.1.6, but it may work with previous versions.
+and the `Python Imaging Library <http://python-pillow.github.io/>`_.
+It was tested with latest Pillow, PIL 1.1.7 is supported but not recommended.
 
 Installation
 ------------
