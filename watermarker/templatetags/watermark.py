@@ -10,7 +10,8 @@ from PIL import Image
 from datetime import datetime
 
 try:
-    from urllib.parse import unquote, url2pathname
+    from urllib.parse import unquote
+    from urllib.request import url2pathname
 except ImportError:
     from urllib import unquote, url2pathname
 
@@ -219,7 +220,10 @@ class Watermarker(object):
     def get_url_path(self, basedir, original_basename, ext, name, obscure=True):
         """Determines an appropriate watermark path"""
 
-        hash = hashlib.sha1(smart_str(name)).hexdigest()
+        try:
+            hash = hashlib.sha1(smart_str(name)).hexdigest()
+        except TypeError:
+            hash = hashlib.sha1(smart_str(name).encode('utf-8')).hexdigest()
 
         # figure out where the watermark would be saved on the filesystem
         if obscure is True:

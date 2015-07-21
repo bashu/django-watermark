@@ -10,9 +10,6 @@ import random
 
 from PIL import Image, ImageEnhance
 
-if sys.version_info[0] == 3:
-    basestring = (str, bytes)
-
 
 def _percent(var):
     """
@@ -78,7 +75,7 @@ def determine_scale(scale, img, mark):
         except (ValueError, TypeError):
             pass
 
-        if isinstance(scale, basestring) and scale.lower() == 'f':
+        if isinstance(scale, str) and scale.lower() == 'f':
             # scale, but preserve the aspect ratio
             scale = min(
                         float(img.size[0]) / mark.size[0],
@@ -101,7 +98,7 @@ def determine_rotation(rotation, mark):
     """
     Determines the number of degrees to rotate the watermark image.
     """
-    if isinstance(rotation, basestring) and rotation.lower() == 'r':
+    if isinstance(rotation, str) and rotation.lower() == 'r':
         rotation = random.randint(0, 359)
     else:
         rotation = _int(rotation)
@@ -139,7 +136,7 @@ def determine_position(position, img, mark):
 
     if isinstance(position, tuple):
         left, top = position
-    elif isinstance(position, basestring):
+    elif isinstance(position, str):
         position = position.lower()
 
         # corner positioning
