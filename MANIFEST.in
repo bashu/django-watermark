@@ -1,4 +1,5 @@
-CHANGES
-LICENSE
-README.rst
+include CHANGES
+include LICENSE
+include README.rst
+recursive-exclude watermarker/tests *
 recursive-include watermarker/locale *
