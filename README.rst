@@ -13,7 +13,7 @@ Authored by `Josh VanderLinden <http://www.codekoala.com//>`_, and some great
 .. image:: https://img.shields.io/pypi/dm/django-watermark.svg
     :target: https://pypi.python.org/pypi/django-watermark/
 
-.. image:: https://img.shields.io/github/license/codekoala/django-watermark.svg
+.. image:: https://img.shields.io/github/license/bashu/django-watermark.svg
     :target: https://pypi.python.org/pypi/django-watermark/
 
 Features
