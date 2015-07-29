@@ -144,7 +144,7 @@ class Watermarker(object):
             'watermark':   watermark.id,
             'left':        pos[0],
             'top':         pos[1],
-            # 'fstat':       os.stat(self._get_filesystem_path(url)),
+            'fstat':       os.stat(self._get_filesystem_path(url)),
         }
         logger.debug('Params: %s' % params)
 
@@ -190,9 +190,21 @@ class Watermarker(object):
         kwargs = kwargs.copy()
 
         kwargs['opacity'] = int(kwargs['opacity'] * 100)
-        # kwargs['st_mtime'] = kwargs['fstat'].st_mtime
-        # kwargs['st_size'] = kwargs['fstat'].st_size
-        
+        """
+        * This is difficult to explain, but I'll try.
+        * A user uploaded a photo and the watermarked was applied to it.
+        * After some time this photo is deleted, but the watermarked file
+        doesn't.
+        * Then a new photo with the same base name is uploaded, and the source
+        code will verify that already exists a obscure watermark file with that
+        hashcode and will not generate it again. So the watermark photo
+        returned will be a different photo from that uploaded.
+        * So, we added the modification time and file size to watermark name
+        to solve this weird situation.
+        """
+        kwargs['st_mtime'] = kwargs['fstat'].st_mtime
+        kwargs['st_size'] = kwargs['fstat'].st_size
+
         params = [
             '%(original_basename)s',
             'wm',
@@ -200,8 +212,8 @@ class Watermarker(object):
             'o%(opacity)i',
             'gs%(greyscale)i',
             'r%(rotation)i',
-            # 'fm%(st_mtime)i',
-            # 'fz%(st_size)i',
+            'fm%(st_mtime)i',
+            'fz%(st_size)i',
             'p%(position)s',
         ]
 
