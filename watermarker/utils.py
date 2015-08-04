@@ -8,6 +8,11 @@ Stolen from http://code.activestate.com/recipes/362879/
 import sys
 import random
 
+try:
+    from django.utils import six
+except ImportError:
+    import six
+
 from PIL import Image, ImageEnhance
 
 
@@ -75,7 +80,7 @@ def determine_scale(scale, img, mark):
         except (ValueError, TypeError):
             pass
 
-        if isinstance(scale, str) and scale.lower() == 'f':
+        if isinstance(scale, six.string_types) and scale.lower() == 'f':
             # scale, but preserve the aspect ratio
             scale = min(
                         float(img.size[0]) / mark.size[0],
@@ -98,7 +103,7 @@ def determine_rotation(rotation, mark):
     """
     Determines the number of degrees to rotate the watermark image.
     """
-    if isinstance(rotation, str) and rotation.lower() == 'r':
+    if isinstance(rotation, six.string_types) and rotation.lower() == 'r':
         rotation = random.randint(0, 359)
     else:
         rotation = _int(rotation)
@@ -136,7 +141,7 @@ def determine_position(position, img, mark):
 
     if isinstance(position, tuple):
         left, top = position
-    elif isinstance(position, str):
+    elif isinstance(position, six.string_types):
         position = position.lower()
 
         # corner positioning
