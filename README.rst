@@ -71,10 +71,10 @@ example.
 You need Django 1.4 or above to run that. It might run on older
 versions but that is not tested.
 
-Upgrading to 0.1.7
-~~~~~~~~~~~~~~~~~~
+Upgrading from 0.1.6
+~~~~~~~~~~~~~~~~~~~~
 
-Upgrading to 0.1.7 is likely to cause problems trying to apply a
+Upgrading from 0.1.6 is likely to cause problems trying to apply a
 migration when the tables already exist. In this case a fake migration
 needs to be applied:
 
