@@ -17,13 +17,16 @@ setup(
     description="Quick and efficient way to apply watermarks to images in Django.",
     long_description=README,
     keywords='django, watermark, image, photo, logo',
-    url='http://github.com/codekoala/django-watermark/',
+    url='http://github.com/bashu/django-watermark/',
     author='Josh VanderLinden',
     author_email='codekoala@gmail.com',
     maintainer='Basil Shubin',
     maintainer_email='basil.shubin@gmail.com',
     install_requires=[
+        'django>=1.4',
         'django-appconf',
+        'pillow',
+        'six',
     ],
     classifiers=[
         'Environment :: Web Environment',

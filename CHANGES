@@ -1,11 +1,16 @@
-WIP
----
+0.1.8
+-----
+
+- python 2.x and 3.x bugfixes
+
+0.1.7
+-----
 
 - makes it easy for browsers like Mozilla and Opera get the correct url of images.
 - added a 10px margin from corners to apply watermark
 - resize watermark before calculating its position
 - apply anti-aliasing on watermark
-- django >=1.4 timezone support
+- django >= 1.4 timezone support
 - python 3 compatibility
 - pillow compatibility
 
