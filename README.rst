@@ -2,7 +2,7 @@ django-watermark
 ================
 
 This project provides a simple way for you to apply custom watermarks
-to images on your Django-powered website.
+to images on your django-powered website.
 
 Authored by `Josh VanderLinden <http://www.codekoala.com//>`_, and some great
 `contributors <https://github.com/codekoala/django-watermark/contributors>`_.
