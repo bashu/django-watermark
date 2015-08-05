@@ -42,8 +42,7 @@ Features
 Requirements
 ------------
 
-``django-watermark`` also relies upon the built-in ``django.contrib.admin``
-and the `Python Imaging Library <http://python-pillow.github.io/>`_.
+``django-watermark`` relies upon the `Python Imaging Library <http://python-pillow.github.io/>`_.
 It was tested with latest Pillow, `PIL <http://www.pythonware.com/products/pil/>`_ 1.1.7 is supported but not recommended.
 
 Installation
