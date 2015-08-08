@@ -7,6 +7,7 @@ Stolen from http://code.activestate.com/recipes/362879/
 """
 import random
 
+from django.conf import settings
 try:
     from django.utils import six
 except ImportError:
@@ -68,10 +69,12 @@ def reduce_opacity(img, opacity):
 
 def determine_scale(scale, img, mark):
     """
-    Scales an image using a specified ratio or 'F'.  If `scale` is 'F', the
-    image is scaled to be as big as possible to fit in `img` without falling off
-    the edges.  Returns the scaled `mark`.
-
+    Scales an image using a specified ratio, 'F' or 'R'.
+    If `scale` is 'F', the image is scaled to be as big as possible to fit
+    in `img` without falling off the edges.
+    If `scale` is 'R', the watermark resizes to a percentage of minimum size
+    of source image.
+    Returns the scaled `mark`.
     """
     if scale:
         try:
@@ -79,14 +82,23 @@ def determine_scale(scale, img, mark):
         except (ValueError, TypeError):
             pass
 
-        if isinstance(scale, six.string_types) and scale.lower() == 'f':
-            # scale, but preserve the aspect ratio
+        if isinstance(scale, six.string_types) and scale.upper() == 'F':
+            # scale watermark to full, but preserve the aspect ratio
             scale = min(
                         float(img.size[0]) / mark.size[0],
                         float(img.size[1]) / mark.size[1]
                        )
+        elif isinstance(scale, six.string_types) and scale.upper() == 'R':
+            # scale watermark to % of source image and preserve the aspect ratio
+            scale = min(
+                        float(img.size[0]) / mark.size[0],
+                        float(img.size[1]) / mark.size[1]
+                       ) / 100 * settings.WATERMARK_PERCENTAGE
         elif type(scale) not in (float, int):
-            raise ValueError('Invalid scale value "%s"!  Valid values are 1) "F" for ratio-preserving scaling and 2) floating-point numbers and integers greater than 0.' % (scale,))
+            raise ValueError('Invalid scale value "%s"! Valid values are "F" '\
+                'for ratio-preserving scaling, "R%%" for percantage aspect '\
+                'ratio of source image and floating-point numbers and '\
+                'integers greater than 0.' % (scale,))
 
         # determine the new width and height
         w = int(mark.size[0] * float(scale))
@@ -190,7 +202,7 @@ def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False,
     if opacity < 1:
         mark = reduce_opacity(mark, opacity)
 
-    if type(scale) != tuple:
+    if not isinstance(scale, tuple):
         scale = determine_scale(scale, img, mark)
 
     mark = mark.resize(scale, resample=Image.ANTIALIAS)
