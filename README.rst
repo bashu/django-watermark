@@ -13,7 +13,7 @@ Authored by `Josh VanderLinden <http://www.codekoala.com//>`_, and some great
 .. image:: https://img.shields.io/pypi/dm/django-watermark.svg
     :target: https://pypi.python.org/pypi/django-watermark/
 
-.. image:: https://img.shields.io/github/license/codekoala/django-watermark.svg
+.. image:: https://img.shields.io/github/license/bashu/django-watermark.svg
     :target: https://pypi.python.org/pypi/django-watermark/
 
 Features
@@ -42,14 +42,9 @@ Features
 Requirements
 ------------
 
-``django-watermark`` requires a modern version of the Django
-framework.  By modern I simply mean a version with the
-``newforms-admin`` functionality.  If you're running on Django 1.0 or
-later, you're good.
-
 ``django-watermark`` also relies upon the built-in ``django.contrib.admin``
-and the `Python Imaging Library <http://www.pythonware.com/products/pil/>`_ (PIL).
-I built it using PIL 1.1.6, but it may work with previous versions.
+and the `Python Imaging Library <http://python-pillow.github.io/>`_.
+It was tested with latest Pillow, `PIL <http://www.pythonware.com/products/pil/>`_ 1.1.7 is supported but not recommended.
 
 Installation
 ------------
