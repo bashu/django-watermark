@@ -37,7 +37,6 @@ def _val(var, is_percent=False):
     will be sought after and then turned into a floating point number between
     0 and 1.  If the value is supposed to be an integer, the variable is cast
     into an integer.
-
     """
     try:
         if is_percent:
@@ -197,7 +196,6 @@ def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False,
               greyscale=False, rotation=0, return_name=False, **kwargs):
     """
     Adds a watermark to an image.
-
     """
     if opacity < 1:
         mark = reduce_opacity(mark, opacity)

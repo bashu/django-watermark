@@ -96,7 +96,6 @@ class Watermarker(object):
           image's filename.  Defaults to ``True``.
         * ``quality``: the quality of the resulting watermarked image.  Default
           is 85.
-
         """
         # look for the specified watermark by name.  If it's not there, go no
         # further
@@ -177,16 +176,19 @@ class Watermarker(object):
         return url_path
 
     def _get_filesystem_path(self, url_path, basedir=settings.MEDIA_ROOT):
-        """Makes a filesystem path from the specified URL path"""
-
+        """
+        Makes a filesystem path from the specified URL path
+        """
         if url_path.startswith(settings.MEDIA_URL):
-            url_path = url_path[len(settings.MEDIA_URL):]  # strip media root url
+            # strip media root url
+            url_path = url_path[len(settings.MEDIA_URL):]
 
         return os.path.normpath(os.path.join(basedir, url2pathname(url_path)))
 
     def generate_filename(self, mark, **kwargs):
-        """Comes up with a good filename for the watermarked image"""
-
+        """
+        Comes up with a good filename for the watermarked image
+        """
         kwargs = kwargs.copy()
 
         kwargs['opacity'] = int(kwargs['opacity'] * 100)
@@ -230,8 +232,9 @@ class Watermarker(object):
         return filename % kwargs
 
     def get_url_path(self, basedir, original_basename, ext, name, obscure=True):
-        """Determines an appropriate watermark path"""
-
+        """
+        Determines an appropriate watermark path
+        """
         try:
             hash = hashlib.sha1(smart_str(name)).hexdigest()
         except TypeError:
@@ -261,8 +264,9 @@ class Watermarker(object):
         return url_path
 
     def create_watermark(self, target, mark, fpath, quality=QUALITY, **kwargs):
-        """Create the watermarked image on the filesystem"""
-
+        """
+        Create the watermarked image on the filesystem
+        """
         im = utils.watermark(target, mark, **kwargs)
         im.save(fpath, quality=quality)
         return im
@@ -272,7 +276,6 @@ class Watermarker(object):
 def watermark(url, args=''):
     """
     Returns the URL to a watermarked copy of the image specified.
-
     """
     # initialize some variables
     args = args.split(',')
