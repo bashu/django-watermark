@@ -11,6 +11,7 @@ class WatermarkSettings(AppConf):
     QUALITY = 85
     OBSCURE_ORIGINAL = True
     RANDOM_POSITION_ONCE = True
+    WATERMARK_PERCENTAGE = 30
 
     class Meta:
         prefix = 'watermark'

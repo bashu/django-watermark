@@ -156,7 +156,10 @@ are:
 * ``tile`` - If you want your watermark to tile across the entire image, you
   simply specify a parameter such as ``tile=1``.
 * ``scale`` - If you'd like to have the watermark as big as possible on the
-  target image and fully visible, you might want to use ``scale=F``.  If you
+  target image and fully visible, you might want to use ``scale=F``.  When you
+  want your watermark size corresponding to a percentage of source image, use
+  ``scale=R`` and define in your settings something like
+  ``WATERMARK_PERCENTAGE=40``. The default percentage value is 30. If you
   want to specify a particular scaling factor, just use something like
   ``scale=1.43``.
 * ``greyscale`` - If you want your watermark to be greyscale, you can specify
