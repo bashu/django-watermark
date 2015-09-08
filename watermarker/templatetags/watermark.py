@@ -144,7 +144,7 @@ class Watermarker(object):
             'watermark':   watermark.id,
             'left':        pos[0],
             'top':         pos[1],
-            # 'fstat':       os.stat(self._get_filesystem_path(url)),
+            'fstat':       os.stat(self._get_filesystem_path(url)),
         }
         logger.debug('Params: %s' % params)
 
@@ -190,9 +190,9 @@ class Watermarker(object):
         kwargs = kwargs.copy()
 
         kwargs['opacity'] = int(kwargs['opacity'] * 100)
-        # kwargs['st_mtime'] = kwargs['fstat'].st_mtime
-        # kwargs['st_size'] = kwargs['fstat'].st_size
-        
+        kwargs['st_mtime'] = kwargs['fstat'].st_mtime
+        kwargs['st_size'] = kwargs['fstat'].st_size
+
         params = [
             '%(original_basename)s',
             'wm',
@@ -200,8 +200,8 @@ class Watermarker(object):
             'o%(opacity)i',
             'gs%(greyscale)i',
             'r%(rotation)i',
-            # 'fm%(st_mtime)i',
-            # 'fz%(st_size)i',
+            'fm%(st_mtime)i',
+            'fz%(st_size)i',
             'p%(position)s',
         ]
 
