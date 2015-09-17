@@ -219,6 +219,3 @@ License
 -------
 
 ``django-watermark`` is released under the BSD license.
-
-.. image:: https://d2weczhvl823v0.cloudfront.net/bashu/django-watermark/trend.png
-   :target: https://bitdeli.com/free
