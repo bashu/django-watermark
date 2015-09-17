@@ -19,6 +19,9 @@ Authored by `Josh VanderLinden <http://www.codekoala.com//>`_, and some great
 .. image:: https://landscape.io/github/bashu/django-watermark/develop/landscape.svg?style=flat
     :target: https://landscape.io/github/bashu/django-watermark/develop
 
+.. image:: https://d2weczhvl823v0.cloudfront.net/bashu/django-watermark/trend.png
+   :target: https://bitdeli.com/free
+
 Features
 --------
 
