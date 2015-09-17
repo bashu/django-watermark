@@ -7,13 +7,13 @@ Stolen from http://code.activestate.com/recipes/362879/
 """
 import random
 
-from django.conf import settings
+from PIL import Image, ImageEnhance
 try:
     from django.utils import six
 except ImportError:
     import six
 
-from PIL import Image, ImageEnhance
+from watermarker.conf import settings
 
 
 def _percent(var):
