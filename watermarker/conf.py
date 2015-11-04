@@ -15,7 +15,7 @@ class WatermarkSettings(AppConf):
     OBSCURE_ORIGINAL = True
     RANDOM_POSITION_ONCE = True
     WATERMARK_PERCENTAGE = getattr(settings, 'WATERMARK_PERCENTAGE', 40)
-    WATERMARK_QUALITY = getattr(settings.WATERMARK_QUALITY, 85)
+    WATERMARK_QUALITY = getattr(settings, 'WATERMARK_QUALITY', 85)
 
     class Meta:
         prefix = 'watermark'
