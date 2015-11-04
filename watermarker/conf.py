@@ -8,10 +8,14 @@ from appconf import AppConf
 
 
 class WatermarkSettings(AppConf):
+    """
+    Define local app config.
+    """
     QUALITY = 85
     OBSCURE_ORIGINAL = True
     RANDOM_POSITION_ONCE = True
-    WATERMARK_PERCENTAGE = getattr(settings, 'WATERMARK_PERCENTAGE', 30)
+    WATERMARK_PERCENTAGE = getattr(settings, 'WATERMARK_PERCENTAGE', 40)
+    WATERMARK_QUALITY = getattr(settings.WATERMARK_QUALITY, 85)
 
     class Meta:
         prefix = 'watermark'
