@@ -2,9 +2,10 @@
 
 import os
 import errno
-import logging
-import traceback
 import hashlib
+import logging
+import pickle
+import traceback
 
 from PIL import Image
 from datetime import datetime
@@ -16,6 +17,7 @@ except ImportError:
     from urllib import unquote, url2pathname
 
 from django import template
+from django.core.cache import caches
 from django.utils.encoding import smart_str
 from django.utils.timezone import make_aware, get_default_timezone
 
@@ -23,20 +25,23 @@ from watermarker import utils
 from watermarker.conf import settings
 from watermarker.models import Watermark
 
-QUALITY = settings.WATERMARK_QUALITY
-OBSCURE_ORIGINAL = settings.WATERMARK_OBSCURE_ORIGINAL
-RANDOM_POSITION_ONCE = settings.WATERMARK_RANDOM_POSITION_ONCE
-
 register = template.Library()
 
 logger = logging.getLogger('watermarker')
+
+QUALITY = settings.WATERMARK_QUALITY
+OBSCURE_ORIGINAL = settings.WATERMARK_OBSCURE_ORIGINAL
+RANDOM_POSITION_ONCE = settings.WATERMARK_RANDOM_POSITION_ONCE
+CACHE_BACKEND_NAME = settings.WATERMARK_CACHE_BACKEND_NAME
 
 
 class Watermarker(object):
 
     def __call__(self, url, name, position=None, opacity=0.5,
                  tile=False, scale=1.0, greyscale=False, rotation=0,
-                 obscure=OBSCURE_ORIGINAL, quality=QUALITY, random_position_once=RANDOM_POSITION_ONCE):
+                 obscure=OBSCURE_ORIGINAL,
+                 quality=QUALITY,
+                 random_position_once=RANDOM_POSITION_ONCE):
         """
         Creates a watermarked copy of an image.
 
@@ -100,7 +105,20 @@ class Watermarker(object):
         # look for the specified watermark by name.  If it's not there, go no
         # further
         try:
-            watermark = Watermark.objects.get(name=name, is_active=True)
+            watermark = None
+            cache = caches[CACHE_BACKEND_NAME] if CACHE_BACKEND_NAME else None
+            # use defined cache backend
+            if cache:
+                watermark = cache.get('watermark_%s' % (name))
+                watermark = pickle.loads(watermark) if watermark else None
+            # watermark not in cache
+            if not watermark:
+                watermark = Watermark.objects.get(name=name, is_active=True)
+                if cache:
+                    # set cache, never expires until change
+                    cache.set(key='watermark_%s' % (name),
+                              value=pickle.dumps(watermark),
+                              timeout=None)
         except Watermark.DoesNotExist:
             logger.error('Watermark "%s" does not exist... Bailing out.' % name)
             return url
@@ -263,7 +281,8 @@ class Watermarker(object):
 
         return url_path
 
-    def create_watermark(self, target, mark, fpath, quality=QUALITY, **kwargs):
+    def create_watermark(self, target, mark, fpath,
+            quality=QUALITY, **kwargs):
         """
         Create the watermarked image on the filesystem
         """
@@ -290,7 +309,7 @@ def watermark(url, args=''):
         position=None,
         quality=QUALITY,
         obscure=OBSCURE_ORIGINAL,
-        random_position_once=RANDOM_POSITION_ONCE,
+        random_position_once=RANDOM_POSITION_ONCE
     )
 
     params['url'] = unquote(url)
