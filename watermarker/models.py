@@ -7,9 +7,9 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 
-from watermarker.conf import settings
+from watermarker.conf import WatermarkSettings
 
-CACHE_BACKEND_NAME = settings.WATERMARK_CACHE_BACKEND_NAME
+CACHE_BACKEND_NAME = WatermarkSettings.WATERMARK_CACHE_BACKEND_NAME
 
 
 @python_2_unicode_compatible

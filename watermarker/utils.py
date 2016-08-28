@@ -13,7 +13,7 @@ try:
 except ImportError:
     import six
 
-from watermarker.conf import settings
+from watermarker.conf import WatermarkSettings
 
 
 def _percent(var):
@@ -92,7 +92,7 @@ def determine_scale(scale, img, mark):
             scale = min(
                         float(img.size[0]) / mark.size[0],
                         float(img.size[1]) / mark.size[1]
-                       ) / 100 * settings.WATERMARK_PERCENTAGE
+                       ) / 100 * WatermarkSettings.WATERMARK_PERCENTAGE
         elif type(scale) not in (float, int):
             raise ValueError('Invalid scale value "%s"! Valid values are "F" '\
                 'for ratio-preserving scaling, "R%%" for percantage aspect '\

@@ -17,6 +17,8 @@ class WatermarkSettings(AppConf):
     WATERMARK_PERCENTAGE = 40
     WATERMARK_QUALITY = 85
     WATERMARK_CACHE_BACKEND_NAME = None
+    WATERMARK_OBSCURE_ORIGINAL = True
+    WATERMARK_RANDOM_POSITION_ONCE = True
 
     class Meta:
         prefix = 'watermark'
@@ -24,6 +26,8 @@ class WatermarkSettings(AppConf):
 
     def configure_quality(self, value):
         if getattr(settings, 'WATERMARKING_QUALITY', None):
-            warnings.warn("WATERMARKING_QUALITY is deprecated, use WATERMARK_QUALITY", DeprecationWarning)
+            warnings.warn(
+                'WATERMARKING_QUALITY is deprecated, use WATERMARK_QUALITY',
+                DeprecationWarning)
 
         return value

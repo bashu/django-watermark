@@ -17,22 +17,23 @@ except ImportError:
     from urllib import unquote, url2pathname
 
 from django import template
+from django.conf import settings
 from django.core.cache import caches
 from django.utils.encoding import smart_str
 from django.utils.timezone import make_aware, get_default_timezone
 
 from watermarker import utils
-from watermarker.conf import settings
+from watermarker.conf import WatermarkSettings
 from watermarker.models import Watermark
 
 register = template.Library()
 
 logger = logging.getLogger('watermarker')
 
-QUALITY = settings.WATERMARK_QUALITY
-OBSCURE_ORIGINAL = settings.WATERMARK_OBSCURE_ORIGINAL
-RANDOM_POSITION_ONCE = settings.WATERMARK_RANDOM_POSITION_ONCE
-CACHE_BACKEND_NAME = settings.WATERMARK_CACHE_BACKEND_NAME
+QUALITY = WatermarkSettings.WATERMARK_QUALITY
+OBSCURE_ORIGINAL = WatermarkSettings.WATERMARK_OBSCURE_ORIGINAL
+RANDOM_POSITION_ONCE = WatermarkSettings.WATERMARK_RANDOM_POSITION_ONCE
+CACHE_BACKEND_NAME = WatermarkSettings.WATERMARK_CACHE_BACKEND_NAME
 
 
 class Watermarker(object):
