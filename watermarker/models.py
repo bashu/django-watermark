@@ -9,13 +9,18 @@ from django.utils.encoding import python_2_unicode_compatible
 
 from watermarker.conf import settings
 
+CACHE_BACKEND_NAME = settings.WATERMARK_CACHE_BACKEND_NAME
+
 
 @python_2_unicode_compatible
 class Watermark(models.Model):
 
-    name = models.CharField(max_length=50, verbose_name=_("name"))
-    image = models.ImageField(upload_to='watermarks', verbose_name=_("image"))
-    is_active = models.BooleanField(default=True, blank=True, verbose_name=_("is active"))
+    name = models.CharField(
+        max_length=50, verbose_name=_("name"))
+    image = models.ImageField(
+        upload_to='watermarks', verbose_name=_("image"))
+    is_active = models.BooleanField(
+        default=True, blank=True, verbose_name=_("is active"))
 
     # for internal use...
 
@@ -37,8 +42,7 @@ def delete_watermark_cache_name(sender, instance, created=False, **kwargs):
     """
     Pre-delete and Post_save signal.
     """
-    cache = caches[settings.WATERMARK_CACHE_BACKEND_NAME]\
-        if settings.WATERMARK_CACHE_BACKEND_NAME else None
+    cache = caches[CACHE_BACKEND_NAME] if CACHE_BACKEND_NAME else None
     # use defined cache backend
     if cache:
         cache.delete('watermark_%s' % (instance.name))

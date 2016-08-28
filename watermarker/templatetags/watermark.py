@@ -112,7 +112,7 @@ class Watermarker(object):
                 watermark = cache.get('watermark_%s' % (name))
                 watermark = pickle.loads(watermark) if watermark else None
             # watermark not in cache
-            if not watermark:
+            if watermark is None:
                 watermark = Watermark.objects.get(name=name, is_active=True)
                 if cache:
                     # set cache, never expires until change
@@ -120,7 +120,8 @@ class Watermarker(object):
                               value=pickle.dumps(watermark),
                               timeout=None)
         except Watermark.DoesNotExist:
-            logger.error('Watermark "%s" does not exist... Bailing out.' % name)
+            logger.error(
+                'Watermark "%s" does not exist... Bailing out.' % name)
             return url
 
         # make sure URL is a string
@@ -134,7 +135,8 @@ class Watermarker(object):
         mark = Image.open(watermark.image.path)
 
         # determine the actual value that the parameters provided will render
-        random_position = bool(position is None or str(position).lower() == 'r')
+        random_position =\
+            bool(position is None or str(position).lower() == 'r')
         scale = utils.determine_scale(scale, target, mark)
         mark = mark.resize(scale, resample=Image.ANTIALIAS)
         rotation = utils.determine_rotation(rotation, mark)
@@ -142,7 +144,8 @@ class Watermarker(object):
 
         # see if we need to create only one randomly positioned watermarked
         # image
-        if not random_position or (not random_position_once and random_position):
+        if not random_position or (
+                not random_position_once and random_position):
             logger.debug('Generating random position for watermark each time')
             position = pos
         else:
@@ -166,23 +169,26 @@ class Watermarker(object):
         logger.debug('Params: %s' % params)
 
         fname = self.generate_filename(mark, **params)
-        url_path = self.get_url_path(basedir, original_basename, ext, fname, obscure)
+        url_path = self.get_url_path(
+            basedir, original_basename, ext, fname, obscure)
         fpath = self._get_filesystem_path(url_path)
 
         logger.debug('Watermark name: %s; URL: %s; Path: %s' % (
             fname, url_path, fpath,
         ))
 
-        # see if the image already exists on the filesystem. If it does, use it.
+        # If the image already exists on the filesystem. If it does, use it.
         if os.access(fpath, os.R_OK):
             # see if the ``Watermark`` object was modified since the
             # file was created
             modified = make_aware(
-                datetime.fromtimestamp(os.path.getmtime(fpath)), get_default_timezone())
+                datetime.fromtimestamp(os.path.getmtime(fpath)),
+                get_default_timezone())
 
             # only return the old file if things appear to be the same
             if modified >= watermark.date_updated:
-                logger.info('Watermark exists and has not changed. Bailing out.')
+                logger.info(
+                    'Watermark exists and has not changed. Bailing out.')
                 return url_path
 
         # make sure the position is in our params for the watermark
@@ -239,7 +245,8 @@ class Watermarker(object):
 
         scale = kwargs.get('scale', None)
         if scale and scale != mark.size:
-            params.append('_s%i' % (float(kwargs['scale'][0]) / mark.size[0] * 100))
+            params.append('_s%i' % (
+                float(kwargs['scale'][0]) / mark.size[0] * 100))
 
         if kwargs.get('tile', None):
             params.append('_tiled')
@@ -249,7 +256,8 @@ class Watermarker(object):
 
         return filename % kwargs
 
-    def get_url_path(self, basedir, original_basename, ext, name, obscure=True):
+    def get_url_path(self, basedir, original_basename,
+                     ext, name, obscure=True):
         """
         Determines an appropriate watermark path
         """
@@ -260,7 +268,8 @@ class Watermarker(object):
 
         # figure out where the watermark would be saved on the filesystem
         if obscure is True:
-            logger.debug('Obscuring original image name: %s => %s' % (name, hash))
+            logger.debug(
+                'Obscuring original image name: %s => %s' % (name, hash))
             url_path = os.path.join(basedir, hash + ext)
         else:
             logger.debug('Not obscuring original image name.')
@@ -274,7 +283,8 @@ class Watermarker(object):
             if e.errno == errno.EEXIST:
                 pass  # not to worry, directory exists
             else:
-                logger.error('Error creating path: %s' % traceback.format_exc())
+                logger.error(
+                    'Error creating path: %s' % traceback.format_exc())
                 raise
         else:
             logger.debug('Created directory: %s' % os.path.dirname(fpath))
@@ -282,7 +292,7 @@ class Watermarker(object):
         return url_path
 
     def create_watermark(self, target, mark, fpath,
-            quality=QUALITY, **kwargs):
+                         quality=QUALITY, **kwargs):
         """
         Create the watermarked image on the filesystem
         """
@@ -338,4 +348,3 @@ def watermark(url, args=''):
             params['random_position_once'] = bool(int(value))
 
     return Watermarker()(**params)
-
