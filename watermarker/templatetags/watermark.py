@@ -161,10 +161,10 @@ class Watermarker(object):
             # see if the ``Watermark`` object was modified since the
             # file was created
             modified = make_aware(
-        	datetime.fromtimestamp(os.path.getmtime(fpath)), get_default_timezone())
-	    date_updated = watermark.date_updated 
-	    if not is_aware(date_updated):
-		date_updated = make_aware(date_updated, get_default_timezone())
+                datetime.fromtimestamp(os.path.getmtime(fpath)), get_default_timezone())
+            date_updated = watermark.date_updated 
+            if not is_aware(date_updated):
+                date_updated = make_aware(date_updated, get_default_timezone())
             # only return the old file if things appear to be the same
             if modified >= date_updated:
                 logger.info('Watermark exists and has not changed. Bailing out.')
