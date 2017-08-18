@@ -292,12 +292,13 @@ class Watermarker(object):
 
         return url_path
 
-    def create_watermark(self, target, mark, fpath,
-                         quality=QUALITY, **kwargs):
+    def create_watermark(self, target, mark, fpath, quality=QUALITY, **kwargs):
         """
         Create the watermarked image on the filesystem
         """
         im = utils.watermark(target, mark, **kwargs)
+        if target.format == 'JPEG' and im.mode.endswith('A'):
+            im = im.convert(im.mode[:-1])
         im.save(fpath, quality=quality)
         return im
 
