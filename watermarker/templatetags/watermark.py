@@ -17,7 +17,7 @@ except ImportError:
 
 from django import template
 from django.utils.encoding import smart_str
-from django.utils.timezone import make_aware, get_default_timezone
+from django.utils.timezone import make_aware, get_default_timezone, is_aware
 
 from watermarker import utils
 from watermarker.conf import settings
@@ -162,9 +162,11 @@ class Watermarker(object):
             # file was created
             modified = make_aware(
                 datetime.fromtimestamp(os.path.getmtime(fpath)), get_default_timezone())
-
+            date_updated = watermark.date_updated
+            if not is_aware(date_updated):
+                date_updated = make_aware(date_updated, get_default_timezone())
             # only return the old file if things appear to be the same
-            if modified >= watermark.date_updated:
+            if modified >= date_updated:
                 logger.info('Watermark exists and has not changed. Bailing out.')
                 return url_path
 
