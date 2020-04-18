@@ -2,10 +2,7 @@ from datetime import datetime
 from hashlib import sha1
 from django.utils import timezone
 
-try:
-    import Image
-except ImportError:
-    from PIL import Image
+from PIL import Image
 import errno
 import logging
 import os
@@ -205,7 +202,7 @@ class Watermarker(object):
     def watermark_path(self, basedir, base, ext, wm_name, obscure=True):
         """Determines an appropriate watermark path"""
 
-        hash = sha1(wm_name).hexdigest()
+        hash = sha1(wm_name.encode('utf-8')).hexdigest()
 
         # figure out where the watermark would be saved on the filesystem
         if obscure:
@@ -219,7 +216,7 @@ class Watermarker(object):
         try:
             root = self.get_url_path(new_file)
             os.makedirs(os.path.dirname(root))
-        except OSError, exc:
+        except OSError as exc:
             if exc.errno == errno.EEXIST:
                 # not to worry, directory exists
                 pass
@@ -235,6 +232,8 @@ class Watermarker(object):
         """Create the watermarked image on the filesystem"""
 
         im = utils.watermark(target, mark, **kwargs)
+        if path.endswith('.jpeg') or path.endswith('.jpg'):
+            im = im.convert('RGB')
         im.save(path, quality=quality)
 
         return im

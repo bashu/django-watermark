@@ -4,9 +4,9 @@ Utilities for applying a watermark to an image using PIL.
 Original Source: http://code.activestate.com/recipes/362879/
 """
 
-import Image, ImageEnhance
+from PIL import Image, ImageEnhance
 import random
-import traceback
+
 
 def _percent(var):
     """
@@ -67,13 +67,13 @@ def determine_scale(scale, img, mark):
         except (ValueError, TypeError):
             pass
 
-        if type(scale) in (str, unicode) and scale.lower() == 'f':
+        if isinstance(scale, str) and scale.lower() == 'f':
             # scale, but preserve the aspect ratio
             scale = min(
                         float(img.size[0]) / mark.size[0],
                         float(img.size[1]) / mark.size[1]
                        )
-        elif type(scale) not in (float, int):
+        elif not isinstance(scale, (float, int)):
             raise ValueError('Invalid scale value "%s"!  Valid values are 1) "F" for ratio-preserving scaling and 2) floating-point numbers and integers greater than 0.' % (scale,))
 
         # determine the new width and height
@@ -90,8 +90,7 @@ def determine_rotation(rotation, mark):
     Determines the number of degrees to rotate the watermark image.
     """
 
-    if (isinstance(rotation, str) or isinstance(rotation, unicode)) \
-        and rotation.lower() == 'r':
+    if isinstance(rotation, str) and rotation.lower() == 'r':
         rotation = random.randint(0, 359)
     else:
         rotation = _int(rotation)
@@ -123,7 +122,7 @@ def determine_position(position, img, mark):
 
     if isinstance(position, tuple):
         left, top = position
-    elif isinstance(position, str) or isinstance(position, unicode):
+    elif isinstance(position, str):
         position = position.lower()
 
         # corner positioning
