@@ -17,7 +17,7 @@ setup(
     description="Quick and efficient way to apply watermarks to images in Django.",
     long_description=README,
     keywords='django, watermark, image, photo, logo',
-    url='http://github.com/bashu/django-watermark/',
+    url='http://github.com/ojengwa/django-watermark/',
     author='Josh VanderLinden',
     author_email='codekoala@gmail.com',
     maintainer='Bernard Ojengwa',
