@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 from watermarker import __version__
 
 setup(
-    name='django-watermark',
+    name='django3-watermark',
     version=__version__,
     packages=find_packages(exclude=['example']),
     include_package_data=True,
@@ -20,8 +20,8 @@ setup(
     url='http://github.com/bashu/django-watermark/',
     author='Josh VanderLinden',
     author_email='codekoala@gmail.com',
-    maintainer='Basil Shubin',
-    maintainer_email='basil.shubin@gmail.com',
+    maintainer='Bernard Ojengwa',
+    maintainer_email='bernardojengwa@gmail.com',
     install_requires=[
         'django>=1.4',
         'django-appconf',
