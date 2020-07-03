@@ -23,6 +23,7 @@ setup(
     maintainer='Basil Shubin',
     maintainer_email='basil.shubin@gmail.com',
     install_requires=[
+        'packaging',
         'django>=1.4',
         'django-appconf',
         'pillow',
