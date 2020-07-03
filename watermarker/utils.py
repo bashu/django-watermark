@@ -14,6 +14,12 @@ except ImportError:
 
 from PIL import Image, ImageEnhance
 
+try:
+    from PIL import __version__ as PILLOW_VERSION
+except ImportError:
+    from PIL import PILLOW_VERSION
+
+from packaging import version
 from .conf import settings
 
 
@@ -226,7 +232,9 @@ def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False,
 
     position = determine_position(position, img, mark)
 
+    original_img_has_rgba = True
     if img.mode != 'RGBA':
+        original_img_has_rgba = False
         img = img.convert('RGBA')
 
     # make sure we have a tuple for a position now
@@ -245,5 +253,19 @@ def watermark(img, mark, position=(0, 0), opacity=1, scale=1.0, tile=False,
     else:
         layer.paste(mark, position)
 
-    # composite the watermark with the layer
+    # Pillow started showing errors instead of warning when trying to discard
+    # RGBA information which is the case when trying to save the input image
+    # as a JPG.
+    # So just discard RGBA information when a version after 4.2 is used.
+    #
+    # See also https://github.com/python-pillow/Pillow/issues/2609
+    # for more information.
+    if version.parse(PILLOW_VERSION) >= version.parse('4.2'):
+
+        # composite the watermark with the layer
+        img = Image.alpha_composite(img, layer)
+        # discard RGBA info
+        img = img.convert("RGB")
+        return img
+
     return Image.composite(layer, img, layer)
