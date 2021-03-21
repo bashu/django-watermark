@@ -254,6 +254,7 @@ class Watermarker(object):
         """Create the watermarked image on the filesystem"""
 
         im = utils.watermark(target, mark, **kwargs)
+        im = im.convert("RGB")
         im.save(fpath, quality=quality)
         return im
 
