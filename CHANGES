@@ -2,6 +2,7 @@
 -----
 
 - python_2_unicode_compatible import error for latest django version 3.0.13 bug fix
+- Fixed bug cannot write mode RGBA as JPEG
 
 0.1.8
 -----
