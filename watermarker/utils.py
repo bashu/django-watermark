@@ -88,7 +88,7 @@ def determine_scale(scale, img, mark):
                 / 100
                 * settings.WATERMARK_PERCENTAGE
             )
-        elif type(scale) not in (float, int):
+        elif not isinstance(scale, (float, int)):
             raise ValueError(
                 'Invalid scale value "%s"! Valid values are "F" '
                 'for ratio-preserving scaling, "R%%" for percantage aspect '
