@@ -16,8 +16,8 @@ Authored by `Josh VanderLinden <http://www.codekoala.com//>`_, and some great
 .. image:: https://img.shields.io/github/license/bashu/django-watermark.svg
     :target: https://pypi.python.org/pypi/django-watermark/
 
-.. image:: https://landscape.io/github/bashu/django-watermark/develop/landscape.svg?style=flat
-    :target: https://landscape.io/github/bashu/django-watermark/develop
+.. image:: https://img.shields.io/travis/bashu/django-watermark.svg
+    :target: https://travis-ci.com/github/bashu/django-watermark/
 
 Features
 --------

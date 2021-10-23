@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('watermarker', '0001_initial'),
+        ("watermarker", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='watermark',
-            name='image',
-            field=models.ImageField(upload_to='watermarks', verbose_name='image'),
+            model_name="watermark",
+            name="image",
+            field=models.ImageField(upload_to="watermarks", verbose_name="image"),
         ),
         migrations.AlterField(
-            model_name='watermark',
-            name='is_active',
-            field=models.BooleanField(blank=True, default=True, verbose_name='is active'),
+            model_name="watermark",
+            name="is_active",
+            field=models.BooleanField(blank=True, default=True, verbose_name="is active"),
         ),
     ]
