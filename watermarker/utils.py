@@ -6,7 +6,6 @@ Stolen from http://code.activestate.com/recipes/362879/
 
 """
 import random
-import six
 
 from PIL import Image, ImageEnhance
 
@@ -79,10 +78,10 @@ def determine_scale(scale, img, mark):
         except (ValueError, TypeError):
             pass
 
-        if isinstance(scale, six.string_types) and scale.upper() == "F":
+        if isinstance(scale, str) and scale.upper() == "F":
             # scale watermark to full, but preserve the aspect ratio
             scale = min(float(img.size[0]) / mark.size[0], float(img.size[1]) / mark.size[1])
-        elif isinstance(scale, six.string_types) and scale.upper() == "R":
+        elif isinstance(scale, str) and scale.upper() == "R":
             # scale watermark to % of source image and preserve the aspect ratio
             scale = (
                 min(float(img.size[0]) / mark.size[0], float(img.size[1]) / mark.size[1])
@@ -111,7 +110,7 @@ def determine_rotation(rotation, mark):
     """
     Determines the number of degrees to rotate the watermark image.
     """
-    if isinstance(rotation, six.string_types) and rotation.lower() == "r":
+    if isinstance(rotation, str) and rotation.lower() == "r":
         rotation = random.randint(0, 359)
     else:
         rotation = _int(rotation)
@@ -149,7 +148,7 @@ def determine_position(position, img, mark):
 
     if isinstance(position, tuple):
         left, top = position
-    elif isinstance(position, six.string_types):
+    elif isinstance(position, str):
         position = position.lower()
 
         # corner positioning

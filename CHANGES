@@ -1,7 +1,7 @@
 0.2.0 (WIP)
 -----------
 
-- dropped support for Python 2.x
+- dropped support for Python 2.x, removde deprecated code.
 
 0.1.9
 -----
