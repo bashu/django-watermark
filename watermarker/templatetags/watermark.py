@@ -9,11 +9,8 @@ from datetime import datetime
 
 from PIL import Image
 
-try:
-    from urllib.parse import unquote
-    from urllib.request import url2pathname
-except ImportError:
-    from urllib import unquote, url2pathname
+from urllib.parse import unquote
+from urllib.request import url2pathname
 
 from django import template
 from django.utils.encoding import smart_str

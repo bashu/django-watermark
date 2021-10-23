@@ -2,10 +2,8 @@
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from six import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class Watermark(models.Model):
 
     name = models.CharField(max_length=50, verbose_name=_("name"))
