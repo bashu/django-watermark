@@ -2,7 +2,7 @@ django-watermark
 ================
 
 This project provides a simple way for you to apply custom watermarks
-to images on your Django-powered website.
+to images on your django-powered website.
 
 Authored by `Josh VanderLinden <http://www.codekoala.com//>`_, and some great
 `contributors <https://github.com/codekoala/django-watermark/contributors>`_.
@@ -15,6 +15,9 @@ Authored by `Josh VanderLinden <http://www.codekoala.com//>`_, and some great
 
 .. image:: https://img.shields.io/github/license/bashu/django-watermark.svg
     :target: https://pypi.python.org/pypi/django-watermark/
+
+.. image:: https://landscape.io/github/bashu/django-watermark/develop/landscape.svg?style=flat
+    :target: https://landscape.io/github/bashu/django-watermark/develop
 
 Features
 --------
@@ -42,8 +45,7 @@ Features
 Requirements
 ------------
 
-``django-watermark`` also relies upon the built-in ``django.contrib.admin``
-and the `Python Imaging Library <http://python-pillow.github.io/>`_.
+``django-watermark`` relies upon the `Python Imaging Library <http://python-pillow.github.io/>`_.
 It was tested with latest Pillow, `PIL <http://www.pythonware.com/products/pil/>`_ 1.1.7 is supported but not recommended.
 
 Installation
@@ -71,10 +73,10 @@ example.
 You need Django 1.4 or above to run that. It might run on older
 versions but that is not tested.
 
-Upgrading to 0.1.7
-~~~~~~~~~~~~~~~~~~
+Upgrading from 0.1.6
+~~~~~~~~~~~~~~~~~~~~
 
-Upgrading to 0.1.7 is likely to cause problems trying to apply a
+Upgrading from 0.1.6 is likely to cause problems trying to apply a
 migration when the tables already exist. In this case a fake migration
 needs to be applied:
 
@@ -154,7 +156,10 @@ are:
 * ``tile`` - If you want your watermark to tile across the entire image, you
   simply specify a parameter such as ``tile=1``.
 * ``scale`` - If you'd like to have the watermark as big as possible on the
-  target image and fully visible, you might want to use ``scale=F``.  If you
+  target image and fully visible, you might want to use ``scale=F``.  When you
+  want your watermark size corresponding to a percentage of source image, use
+  ``scale=R`` and define in your settings something like
+  ``WATERMARK_PERCENTAGE=40``. The default percentage value is 30. If you
   want to specify a particular scaling factor, just use something like
   ``scale=1.43``.
 * ``greyscale`` - If you want your watermark to be greyscale, you can specify
