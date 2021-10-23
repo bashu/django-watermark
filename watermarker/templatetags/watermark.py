@@ -108,7 +108,7 @@ class Watermarker(object):
         # look for the specified watermark by name.  If it's not there, go no
         # further
         try:
-            watermark = Watermark.objects.get(name=name, is_active=True)
+            watermark = Watermark.objects.get(name__exact=name, is_active=True)
         except Watermark.DoesNotExist:
             logger.error('Watermark "%s" does not exist... Bailing out.' % name)
             return url

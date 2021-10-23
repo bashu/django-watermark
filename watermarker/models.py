@@ -22,3 +22,15 @@ class Watermark(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # select all other active items
+            qs = self.__class__.objects.filter(name__exact=self.name, is_active=True)
+            # except self (if self already exists)
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+            # and deactive them
+            qs.update(is_active=False)
+
+        super(Watermark, self).save(*args, **kwargs)
