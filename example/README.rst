@@ -16,7 +16,7 @@ Next, you can setup the django instance using :
 
 .. code-block:: bash
 
-    python example/manage.py syncdb --noinput
+    python example/manage.py migrate
     python example/manage.py loaddata example/initial_data.json
 
 And run it :
