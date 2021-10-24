@@ -40,70 +40,13 @@ class Watermarker(object):
         scale=1.0,
         greyscale=False,
         rotation=0,
-        obscure=OBSCURE_ORIGINAL,
+        noalpha=True,
         quality=QUALITY,
+        obscure=OBSCURE_ORIGINAL,
         random_position_once=RANDOM_POSITION_ONCE,
     ):
         """
         Creates a watermarked copy of an image.
-
-        * ``name``: This is the name of the Watermark object that you wish to
-          apply to the image.
-        * ``position``:  There are several options.
-
-            * ``R``: random placement, which is the default behavior.
-            * ``C``: center the watermark
-            * ``XxY`` where ``X`` is either a specific pixel position on the
-              x-axis or a percentage of the total width of the target image and
-              ``Y`` is a specific pixel position on the y-axis of the image or
-              a percentage of the total height of the target image.  These
-              values represent the location of the top and left edges of the
-              watermark.  If either ``X`` or ``Y`` is a percentage, you must
-              use a percent sign.  This is not used if either one of the
-              ``tiled`` or ``scale`` parameters are true.
-
-              Examples:
-
-                * ``50%x50%``: positions the watermark at the center of the
-                  image.
-                * ``50%x100``: positions the watermark at the midpoint of the
-                  total width of the image and 100 pixels from the top of the
-                  image
-                * ``100x50%``: positions the watermark at the midpoint of the
-                  total height of the image and 100 pixels from the left edge
-                  of the image
-                * ``100x100``: positions the top-left corner of the watermark
-                  at 100 pixels from the top of the image and 100 pixels from
-                  the left edge of the image.
-
-            * ``br``, ``bl``, ``tr``, ``tl`` where ``b`` means "bottom", ``t``
-              means "top", ``l`` means "left", and ``r`` means "right".  This
-              will position the watermark at the extreme edge of the original
-              image with just enough room for the watermark to "fully show".
-              This assumes the watermark is not as big as the original image.
-
-        * ``opacity``: an integer from 0 to 100.  This value represents the
-          transparency level of the watermark when it is applied.  A value of
-          100 means the watermark is completely opaque while a value of 0 means
-          the watermark will be invisible.
-        * ``tile``: ``True`` or ``False`` to specify whether or not the
-          watermark shall be tiled across the entire image.
-        * ``scale``: a floating-point number above 0 to specify the scaling for
-          the watermark.  If you want the watermark to be scaled to its maximum
-          without falling off the edge of the target image, use ``F``.  By
-          default, scale is set to ``1.0``, or 1:1 scaling, meaning the
-          watermark will be placed on the target image at its original size.
-        * ``greyscale``: ``True`` or ``False`` to specify whether or not the
-          watermark should be converted to a greyscale image before applying it
-          to the target image.  Default is ``False``.
-        * ``rotation``: 0 to 359 to specify the number of degrees to rotate the
-          watermark before applying it to the target image.  Alternatively, you
-          may set ``rotation=R`` for a random rotation value.
-        * ``obscure``: set to ``False`` if you wish to expose the original
-          image's filename.  Defaults to ``True``.
-        * ``quality``: the quality of the resulting watermarked image.  Default
-          is 85.
-
         """
         # look for the specified watermark by name.  If it's not there, go no
         # further
@@ -147,6 +90,7 @@ class Watermarker(object):
             "rotation": rotation,
             "original_basename": original_basename,
             "ext": ext,
+            "noalpha": noalpha,
             "quality": quality,
             "watermark": watermark.id,
             "left": pos[0],
@@ -265,7 +209,8 @@ class Watermarker(object):
         """Create the watermarked image on the filesystem"""
 
         im = utils.watermark(target, mark, **kwargs)
-        im = im.convert("RGB")
+        if not kwargs.get("noalpha", True) is False:
+            im = im.convert("RGB")
         im.save(fpath, quality=quality)
         return im
 
@@ -287,6 +232,7 @@ def watermark(url, args=""):
         greyscale=False,
         rotation=0,
         position=None,
+        noalpha=True,
         quality=QUALITY,
         obscure=OBSCURE_ORIGINAL,
         random_position_once=RANDOM_POSITION_ONCE,
@@ -310,6 +256,8 @@ def watermark(url, args=""):
             params["greyscale"] = bool(int(value))
         elif key == "rotation":
             params["rotation"] = value
+        elif key == "noalpha":
+            params["noalpha"] = bool(int(value))
         elif key == "quality":
             params["quality"] = int(value)
         elif key == "obscure":

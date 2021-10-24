@@ -170,6 +170,9 @@ are:
 * ``obscure`` - Set this parameter to 0 to make the original image's filename
   visible to the user.  Default is 1 (or True) to obscure the original
   filename.
+* ``noalpha`` - Set this to 1 to remove any alpha introduced with the watermark
+  effect, useful to force a JPEG image to remain the same, saving a lot of space,
+  setting to 1 effectively converts any RGBA color space to RGB. Defalt is 1 (or True).
 * ``quality`` - Set this to an integer between 0 and 100 to specify the quality
   of the resulting image.  Default is 85.
 * ``random_position_once`` - Set this to 0 or 1 to specify the random
