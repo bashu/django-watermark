@@ -1,13 +1,15 @@
-0.2.0 (WIP)
------------
+0.2.0
+-----
 
-- dropped support for Python 2.x, removde deprecated code.
+- added the ability to remove alpha introduced with the watermark effect
+- dropped support for Python 2.x, removed deprecated code and various bugfixes
+- removed 10px margin introduced in 0.1.7
 
 0.1.9
 -----
 
 - python_2_unicode_compatible import error for latest django version 3.0.13 bug fix
-- Fixed bug cannot write mode RGBA as JPEG
+- fixed bug cannot write mode RGBA as JPEG
 
 0.1.8
 -----
@@ -17,7 +19,7 @@
 0.1.7
 -----
 
-- makes it easy for browsers like Mozilla and Opera get the correct url of images.
+- makes it easy for browsers like Mozilla and Opera get the correct url of images
 - added a 10px margin from corners to apply watermark
 - resize watermark before calculating its position
 - apply anti-aliasing on watermark
