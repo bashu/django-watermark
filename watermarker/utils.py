@@ -141,9 +141,6 @@ def determine_position(position, img, mark):
     max_left = max(img.size[0] - mark.size[0], 0)
     max_top = max(img.size[1] - mark.size[1], 0)
 
-    # Added a 10px margin from corners to apply watermark.
-    margin = 10
-
     if not position:
         position = "r"
 
@@ -155,13 +152,13 @@ def determine_position(position, img, mark):
         # corner positioning
         if position in ["tl", "tr", "br", "bl"]:
             if "t" in position:
-                top = margin
+                top = 0
             elif "b" in position:
-                top = max_top - margin
+                top = max_top
             if "l" in position:
-                left = margin
+                left = 0
             elif "r" in position:
-                left = max_left - margin
+                left = max_left
 
         # center positioning
         elif position == "c":
@@ -210,7 +207,8 @@ def watermark(
     if not isinstance(scale, tuple):
         scale = determine_scale(scale, img, mark)
 
-    mark = mark.resize(scale, resample=Image.ANTIALIAS)
+    if scale[0] != mark.size[0] and scale[1] != mark.size[1]:
+        mark = mark.resize(scale, resample=Image.ANTIALIAS)
 
     if greyscale and mark.mode != "LA":
         mark = mark.convert("LA")
