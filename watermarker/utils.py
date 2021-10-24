@@ -5,6 +5,7 @@ Utilities for applying a watermark to an image using PIL.
 Stolen from http://code.activestate.com/recipes/362879/
 
 """
+import re
 import random
 
 from PIL import Image, ImageEnhance
@@ -65,9 +66,9 @@ def reduce_opacity(img, opacity):
 
 def determine_scale(scale, img, mark):
     """
-    Scales an image using a specified ratio, 'F' or 'R'. If `scale` is
+    Scales an image using a specified ratio, 'F' or 'R%%'. If `scale` is
     'F', the image is scaled to be as big as possible to fit in `img`
-    without falling off the edges.  If `scale` is 'R', the watermark
+    without falling off the edges.  If `scale` is 'R%%', the watermark
     resizes to a percentage of minimum size of source image.  Returns
     the scaled `mark`.
 
@@ -81,12 +82,12 @@ def determine_scale(scale, img, mark):
         if isinstance(scale, str) and scale.upper() == "F":
             # scale watermark to full, but preserve the aspect ratio
             scale = min(float(img.size[0]) / mark.size[0], float(img.size[1]) / mark.size[1])
-        elif isinstance(scale, str) and scale.upper() == "R":
+        elif isinstance(scale, str) and re.match(r"R\d{1,3}\%", scale.upper()):
             # scale watermark to % of source image and preserve the aspect ratio
+            percentage = float(re.match(r"R(\d{1,3})\%", scale.upper()).group(1))
             scale = (
                 min(float(img.size[0]) / mark.size[0], float(img.size[1]) / mark.size[1])
-                / 100
-                * settings.WATERMARK_PERCENTAGE
+                / 100 * percentage
             )
         elif not isinstance(scale, (float, int)):
             raise ValueError(

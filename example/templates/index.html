@@ -3,7 +3,7 @@
   <head></head>
   <body>
     {% with "/media/scream.jpg" as url_path %}
-      <img src="{{ url_path|watermark:"sample,scale=0.5,rotation=5,tile=1,greyscale=1,position=br,opacity=85" }}" />
+      <img src="{{ url_path|watermark:"sample,scale=R30%,rotation=5,tile=1,greyscale=1,position=br,opacity=85" }}" />
     {% endwith %}
   </body>
 </html>

@@ -42,16 +42,17 @@ Features
 * Rotation: you can rotate your watermark a certain number of degrees or have
   the rotation be random.
 
-Requirements
-------------
-
-``django-watermark`` relies upon the `Python Imaging Library <http://python-pillow.github.io/>`_.
-It was tested with latest Pillow, `PIL <http://www.pythonware.com/products/pil/>`_ 1.1.7 is supported but not recommended.
-
 Installation
 ------------
 
-Either clone this repository into your project, or install with ``pip install django-watermark``
+First install the module, preferably in a virtual environment. It can be installed from PyPI:
+
+.. code-block:: bash
+
+    pip install django-watermark
+
+Setup
+-----
 
 First of all, you must add this project to your list of ``INSTALLED_APPS`` in
 ``settings.py`` :
@@ -155,12 +156,11 @@ are:
 * ``tile`` - If you want your watermark to tile across the entire image, you
   simply specify a parameter such as ``tile=1``.
 * ``scale`` - If you'd like to have the watermark as big as possible on the
-  target image and fully visible, you might want to use ``scale=F``.  When you
-  want your watermark size corresponding to a percentage of source image, use
-  ``scale=R`` and define in your settings something like
-  ``WATERMARK_PERCENTAGE=40``. The default percentage value is 30. If you
+  target image and fully visible, you might want to use ``scale=F``. If you
   want to specify a particular scaling factor, just use something like
-  ``scale=1.43``.
+  ``scale=1.43``. Scale could also be a percentage of the smallest image, the
+  one to be watermarked, dimension, for example ``scale=R20%`` would scale the
+  watermark to be 20% of the smallest between width and height of the target image.
 * ``greyscale`` - If you want your watermark to be greyscale, you can specify
   the parameter ``greyscale=1`` and all color saturation will go away.
 * ``rotation`` - Set this parameter to any integer between 0 and 359 (really
@@ -184,31 +184,31 @@ Examples
 
 .. code-block:: html+django
 
-   {{ image_url|watermark:"My Watermark,position=br,opacity=35" }}
+    {{ image_url|watermark:"My Watermark,position=br,opacity=35" }}
 
 Looks for a watermark named "My Watermark", place it in the bottom-right corner of the target image, using a 35% transparency level.
 
 .. code-block:: html+django
 
-   {{ image_url|watermark:"Your Watermark,position=tl,opacity=75" }}
+    {{ image_url|watermark:"Your Watermark,position=tl,opacity=75" }}
 
 Looks for a watermark named "Your Watermark", place it in the top-left corner of the target image, using a 75% transparency level.
 
 .. code-block:: html+django
 
-   {{ image_url|watermark:"The Watermark,position=43%x80%,opacity=40" }}
+    {{ image_url|watermark:"The Watermark,position=43%x80%,opacity=40" }}
 
 Looks for a watermark named "The Watermark", places it at 43% on the x-axis and 80% of the y-axis of the target image, at a transparency level of 40%.
 
 .. code-block:: html+django
 
-   {{ image_url|watermark:"The Watermark,position=R,opacity=10,rotation=45" }}
+    {{ image_url|watermark:"The Watermark,position=R,opacity=10,rotation=45" }}
 
 Looks for a watermark named "The Watermark", randomly generates a position for it, at a transparency level of 10%, rotated 45 degrees.
 
 .. code-block:: html+django
 
-   {{ image_url|watermark:"w00t,opacity=40,tile=1" }}
+    {{ image_url|watermark:"w00t,opacity=40,tile=1" }}
 
 Looks for a watermark called "w00t", tiles it across the entire target image, at a transparency level of 40%.
 
