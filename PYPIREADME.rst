@@ -19,11 +19,10 @@ to images on your django-powered website.
 Maintained by `Basil Shubin <https://github.com/bashu/>`_, and some great
 `contributors <https://github.com/bashu/django-watermark/contributors>`_.
 
-.. raw:: html
-
-    <p align="center">
-        <img src="https://raw.githubusercontent.com/bashu/django-watermark/develop/showcase.png">
-    </p>
+.. image:: https://raw.githubusercontent.com/bashu/django-watermark/develop/showcase.png
+   :target: https://raw.githubusercontent.com/bashu/django-watermark/develop/showcase.png
+   :align: center
+   :width: 600px
 
 Features
 --------
